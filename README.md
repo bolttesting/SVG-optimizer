@@ -29,6 +29,8 @@ npm run dev
 
 Then open **http://127.0.0.1:3000** (the dev script uses this host to avoid some Windows / DNS issues).
 
+Use **Node.js 20.x** locally and on Hostinger (Next.js 14 is not reliable on Node 22 for some builds). The repo includes **`.nvmrc`** (`20`) and **`package.json` `engines`** so panels that read them pick the right runtime.
+
 **Production:** [svgoptimizer.site](https://svgoptimizer.site) — canonical URLs, sitemap, and Open Graph default to `https://svgoptimizer.site` when `NEXT_PUBLIC_SITE_URL` is not set.
 
 - **Contact email** defaults to **`info@svgoptimizer.site`** (footer + `/contact` mailto form). Override with `NEXT_PUBLIC_CONTACT_EMAIL` if needed.
