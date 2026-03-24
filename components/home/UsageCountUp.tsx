@@ -1,44 +1,81 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+
+/** Keep hero count close to /admin/stats (same RPC); 30s limits stale 1-off mismatches. */
+const POLL_MS = 30_000
+const FETCH_TIMEOUT_MS = 8_000
 
 /**
- * Count-up of unique visitors (Supabase analytics_sessions via /api/analytics/public-count).
- * Hidden until data loads; hidden if count is 0 or API unavailable.
+ * Unique visitors from Supabase (GET /api/analytics/public-count).
+ * Polls on an interval and when the tab becomes visible so the number keeps up with new visitors.
  */
 export function UsageCountUp() {
   const [target, setTarget] = useState<number | null>(null)
   const [display, setDisplay] = useState(0)
+  const displayRef = useRef(0)
 
   useEffect(() => {
-    let cancelled = false
+    displayRef.current = display
+  }, [display])
+
+  const applyCount = useCallback((n: number) => {
+    if (n < 1) return
+    setTarget((prev) => (prev !== n ? n : prev))
+  }, [])
+
+  const fetchCount = useCallback(() => {
     const ac = new AbortController()
-    const tid = window.setTimeout(() => ac.abort(), 8_000)
-    void fetch('/api/analytics/public-count', { signal: ac.signal })
+    const tid = window.setTimeout(() => ac.abort(), FETCH_TIMEOUT_MS)
+    return fetch('/api/analytics/public-count', {
+      signal: ac.signal,
+      cache: 'no-store',
+    })
       .then((res) => res.json())
       .then((d: { ok?: boolean; uniqueVisitors?: number }) => {
-        if (cancelled || !d.ok || typeof d.uniqueVisitors !== 'number' || d.uniqueVisitors < 1) return
-        setTarget(d.uniqueVisitors)
+        if (!d.ok || typeof d.uniqueVisitors !== 'number') return
+        applyCount(d.uniqueVisitors)
       })
       .catch(() => {})
       .finally(() => clearTimeout(tid))
-    return () => {
-      cancelled = true
-      ac.abort()
-      clearTimeout(tid)
+  }, [applyCount])
+
+  useEffect(() => {
+    void fetchCount()
+    const id = window.setInterval(() => void fetchCount(), POLL_MS)
+    const onVis = () => {
+      if (document.visibilityState === 'visible') void fetchCount()
     }
-  }, [])
+    document.addEventListener('visibilitychange', onVis)
+    return () => {
+      clearInterval(id)
+      document.removeEventListener('visibilitychange', onVis)
+    }
+  }, [fetchCount])
 
   useEffect(() => {
     if (target == null) return
+    const from = displayRef.current
+    const to = target
+    if (from === to) return
+
+    // Same source as admin; small deltas are usually new visitors or rounding — show immediately.
+    if (Math.abs(to - from) <= 3) {
+      setDisplay(to)
+      displayRef.current = to
+      return
+    }
+
     const start = performance.now()
-    const duration = 1400
+    const duration = from === 0 ? 1400 : 900
     let raf = 0
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / duration)
       const eased = 1 - (1 - t) ** 3
-      setDisplay(Math.round(target * eased))
+      const v = Math.round(from + (to - from) * eased)
+      setDisplay(v)
       if (t < 1) raf = requestAnimationFrame(tick)
+      else displayRef.current = to
     }
     raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(raf)

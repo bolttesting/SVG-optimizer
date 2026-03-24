@@ -135,15 +135,6 @@ export function SvgOptimizerWorkspace() {
             </div>
 
             {files.length > 0 && (
-              <RasterExportPanel
-                svg={selectedFile?.optimizedSvg ?? selectedFile?.originalSvg ?? null}
-                baseFileName={selectedFile?.file.name ?? 'image.svg'}
-                disabled={isProcessing}
-                placement="belowPreview"
-              />
-            )}
-
-            {files.length > 0 && (
               <div className="rounded-2xl border border-border/80 bg-card/60 shadow-sm backdrop-blur-sm dark:bg-card/40">
                 {showStats && (
                   <StatsDisplay
@@ -174,6 +165,15 @@ export function SvgOptimizerWorkspace() {
                   />
                 </div>
               </div>
+            )}
+
+            {files.length > 0 && (
+              <RasterExportPanel
+                svg={selectedFile?.optimizedSvg ?? selectedFile?.originalSvg ?? null}
+                baseFileName={selectedFile?.file.name ?? 'image.svg'}
+                disabled={isProcessing}
+                placement="belowPreview"
+              />
             )}
 
             <div className="rounded-2xl border border-border/80 bg-muted/20 p-4 dark:bg-muted/10">
