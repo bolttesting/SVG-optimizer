@@ -42,12 +42,12 @@ Use **Node.js 20.x** locally and on Hostinger (Next.js 14 is not reliable on Nod
 Usually **LiteSpeed/nginx cannot reach your Node process** (wrong port, wrong bind address, or the app exited).
 
 1. **Port** — Use **`npm run start`** so the app reads **`PORT`** from the panel (default `3000`). The Node.js screen **Application port** (or similar) must match **`PORT`** (often both should be **3000** unless the host assigns another port).
-2. **Do not set a misleading `HOST` env** — Some panels set **`HOST`** to your domain (e.g. `svgoptimizer.site`). That value is **not** a TCP bind address. This project only uses **`LISTEN_HOST`** / **`NEXT_LISTEN_HOST`** if you need to override listening (default **`0.0.0.0`**). If you still see 503, try **`LISTEN_HOST=127.0.0.1`** only when your host’s docs say to bind localhost for the reverse proxy.
+2. **Do not set a misleading `HOST` env** — Some panels set **`HOST`** to your domain (e.g. `svgoptimizer.site`). That is **not** a bind address. **`npm run start`** uses **`LISTEN_HOST`** / **`NEXT_LISTEN_HOST`**; default is **`127.0.0.1`** (typical for LiteSpeed → Node). Use **`LISTEN_HOST=0.0.0.0`** for Docker or listening on all interfaces.
 3. **Build** — Run **`npm run build`** before start (runs **`next build`** plus **`copy-standalone-assets`**, so **`.next/standalone`** has `public` and static chunks). **`npm run start`** prefers that **standalone `server.js`**; without a successful build the process exits → 503.
 4. **Logs** — Check **Node / deployment logs** after “Starting…” for crashes (OOM, errors). If you see **two** “Next.js 14” banners back-to-back, the start command may be running twice—leave **one** process only.
 5. **SSH sanity check** (if available): `curl -sI http://127.0.0.1:3000` (use your real **PORT**). If that fails, the proxy is not the problem—Node isn’t listening. If it succeeds but the site still 503, fix the **web server → Node** mapping in the panel.
 6. **Restart** the Node app after changing env vars.
-7. **503 keeps coming back** — In Hostinger env add **`PORT=3000`** (if not injected) and **`LISTEN_HOST=127.0.0.1`**, redeploy/restart. LiteSpeed often proxies only to localhost; **`npm run start`** must stay as the start command (uses `scripts/next-start.cjs`).
+7. **503 keeps coming back** — Set **`PORT=3000`** (or your panel port), redeploy/restart. Logs should show **`[svg-optimizer]`** lines: **`standalone=… exists=true`**. If **`exists=false`**, the full **`npm run build`** (including copy step) did not run on the server. **`npm run start`** must be the start command.
 
 ### Styles / scripts not loading? (unstyled page, console errors on `layout.css`, `page.js`, `main-app`)
 
