@@ -53,9 +53,14 @@
   * {
     border-color: hsl(var(--border));
   }
+  html {
+    overflow-x: clip;
+  }
+
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

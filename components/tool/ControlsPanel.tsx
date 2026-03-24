@@ -34,12 +34,13 @@ export function ControlsPanel({
 
   return (
     <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Settings</CardTitle>
+      <CardHeader className="space-y-3 pb-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <CardTitle className="text-base sm:text-lg">Settings</CardTitle>
           <Button
             variant="ghost"
             size="sm"
+            className="h-auto min-h-10 w-full justify-center px-3 py-2.5 sm:w-auto sm:justify-start sm:py-2"
             onClick={onReset}
             disabled={isProcessing}
             title="Restore default optimization options (precision & toggles). Does not affect page appearance."
@@ -47,12 +48,13 @@ export function ControlsPanel({
             Reset options
           </Button>
         </div>
-        <div className="flex flex-wrap gap-2 pt-2">
+        <div className="grid grid-cols-1 gap-2 pt-0 sm:grid-cols-3 sm:pt-1">
           {(['max-compression', 'balanced', 'quality'] as PresetType[]).map((preset) => (
             <Button
               key={preset}
               variant="outline"
               size="sm"
+              className="min-h-10 w-full justify-center"
               onClick={() => onApplyPreset(preset)}
               disabled={isProcessing}
             >
@@ -88,8 +90,8 @@ export function ControlsPanel({
             { key: 'collapseGroups', label: 'Collapse groups' },
             { key: 'convertToPath', label: 'Convert shapes to path' },
           ].map(({ key, label }) => (
-            <div key={key} className="flex items-center justify-between">
-              <Label className="text-sm font-normal">{label}</Label>
+            <div key={key} className="flex items-center justify-between gap-3">
+              <Label className="min-w-0 flex-1 text-sm font-normal leading-snug">{label}</Label>
               <Switch
                 checked={settings[key as keyof OptimizationSettings] as boolean}
                 onCheckedChange={(v) => update(key as keyof OptimizationSettings, v)}

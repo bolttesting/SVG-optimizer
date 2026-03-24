@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { CookieConsent } from '@/components/layout/CookieConsent'
@@ -8,6 +8,12 @@ import { siteConfig } from '@/config/site'
 import './globals.css'
 
 const metadataBase = new URL(`${siteConfig.url.replace(/\/$/, '')}/`)
+
+/** Ensures real device width for media queries (nav breakpoints) and prevents “desktop layout in a pannable viewport”. */
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
 
 export const metadata: Metadata = {
   metadataBase,
@@ -34,14 +40,17 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="relative z-0 flex min-h-screen flex-col font-sans antialiased" suppressHydrationWarning>
+    <html lang="en" className="h-full overflow-x-clip" suppressHydrationWarning>
+      <body
+        className="relative z-0 flex min-h-screen min-w-0 flex-col overflow-x-clip font-sans antialiased"
+        suppressHydrationWarning
+      >
         <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
           <div className="absolute -left-1/4 top-0 h-[420px] w-[70%] rounded-full bg-primary/[0.08] blur-3xl dark:bg-primary/[0.12]" />
           <div className="absolute -right-1/4 top-1/3 h-[360px] w-[60%] rounded-full bg-violet-500/[0.06] blur-3xl dark:bg-violet-400/[0.08]" />
         </div>
         <Header />
-        <main className="relative">{children}</main>
+        <main className="relative min-w-0 w-full max-w-full flex-1 overflow-x-clip">{children}</main>
         <Footer />
         <CookieConsent />
         <ConditionalAnalytics />

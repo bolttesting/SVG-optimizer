@@ -47,7 +47,7 @@ export function UsageCountUp() {
   if (target == null) return null
 
   return (
-    <p className="mt-5 animate-fade-in text-sm text-muted-foreground">
+    <p className="mt-5 animate-fade-in text-balance text-sm text-muted-foreground">
       <span className="font-semibold tabular-nums text-foreground">{display.toLocaleString()}</span>
       {' '}
       unique visitors have used this tool

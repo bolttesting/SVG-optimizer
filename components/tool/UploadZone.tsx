@@ -74,7 +74,7 @@ export function UploadZone({
       <div
         {...getRootProps()}
         className={cn(
-          'relative flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/80 p-8 transition-colors',
+          'relative flex min-h-[180px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/80 p-5 transition-colors sm:min-h-[200px] sm:p-8',
           'hover:border-primary/40 hover:bg-primary/[0.03]',
           isDragActive && 'border-primary bg-primary/5',
           isProcessing && 'pointer-events-none opacity-60'

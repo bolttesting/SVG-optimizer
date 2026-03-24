@@ -10,7 +10,7 @@ const links = [
 
 export function Footer() {
   return (
-    <footer className="mt-auto border-t border-border/60 bg-muted/20">
+    <footer className="mt-auto min-w-0 max-w-full overflow-x-clip border-t border-border/60 bg-muted/20">
       <div className="container grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-3">
         <div>
           <p className="text-lg font-semibold">{siteConfig.name}</p>
@@ -62,7 +62,7 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-border/60 py-6">
-        <p className="container text-center text-xs text-muted-foreground">
+        <p className="container text-balance text-center text-xs leading-relaxed text-muted-foreground">
           © {new Date().getFullYear()} {siteConfig.name}. Designed & developed by{' '}
           <a
             href="https://logixcontact.com"

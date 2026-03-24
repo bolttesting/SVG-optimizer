@@ -33,22 +33,25 @@ export function CodeViewer({ code, onCopy }: CodeViewerProps) {
   }
 
   return (
-    <div className="relative">
-      <pre className="max-h-[300px] overflow-auto rounded-lg border bg-muted/50 p-4 text-xs">
+    <div className="space-y-2 sm:relative sm:space-y-0">
+      <div className="flex justify-end sm:absolute sm:right-2 sm:top-2 sm:z-10">
+        <Button
+          variant="secondary"
+          size="sm"
+          className="min-h-10 w-full sm:min-h-9 sm:w-auto"
+          onClick={handleCopy}
+          aria-label={copied ? 'Copied' : 'Copy code'}
+        >
+          {copied ? (
+            <Check className="h-4 w-4 text-green-600" aria-hidden />
+          ) : (
+            <Copy className="h-4 w-4" aria-hidden />
+          )}
+        </Button>
+      </div>
+      <pre className="max-h-[min(280px,50svh)] overflow-auto rounded-lg border bg-muted/50 p-3 text-[11px] leading-relaxed sm:max-h-[300px] sm:p-4 sm:pr-14 sm:text-xs">
         <code className="break-all">{code}</code>
       </pre>
-      <Button
-        variant="secondary"
-        size="sm"
-        className="absolute right-2 top-2"
-        onClick={handleCopy}
-      >
-        {copied ? (
-          <Check className="h-4 w-4 text-green-600" />
-        ) : (
-          <Copy className="h-4 w-4" />
-        )}
-      </Button>
     </div>
   )
 }

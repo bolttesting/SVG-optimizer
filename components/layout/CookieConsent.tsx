@@ -37,7 +37,7 @@ export function CookieConsent() {
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-[100] border-t bg-card/95 p-4 shadow-lg backdrop-blur-md md:p-5"
+      className="fixed inset-x-0 bottom-0 z-[100] border-t bg-card/95 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-lg backdrop-blur-md sm:p-5"
       role="dialog"
       aria-label="Cookie preferences"
     >
@@ -64,14 +64,26 @@ export function CookieConsent() {
             .
           </p>
         </div>
-        <div className="flex flex-shrink-0 flex-wrap gap-2">
-          <Button type="button" variant="outline" size="sm" onClick={() => save('rejected')}>
+        <div className="flex w-full flex-shrink-0 flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="min-h-11 w-full sm:min-h-9 sm:w-auto"
+            onClick={() => save('rejected')}
+          >
             Reject non-essential
           </Button>
-          <Button type="button" variant="secondary" size="sm" onClick={() => save('essential')}>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            className="min-h-11 w-full sm:min-h-9 sm:w-auto"
+            onClick={() => save('essential')}
+          >
             Essential only
           </Button>
-          <Button type="button" size="sm" onClick={() => save('all')}>
+          <Button type="button" size="sm" className="min-h-11 w-full sm:min-h-9 sm:w-auto" onClick={() => save('all')}>
             Accept all
           </Button>
         </div>
