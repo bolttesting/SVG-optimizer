@@ -29,7 +29,10 @@ npm run dev
 
 Then open **http://127.0.0.1:3000** (the dev script uses this host to avoid some Windows / DNS issues).
 
-**Production:** [svgoptimizer.site](https://svgoptimizer.site) — canonical URLs, sitemap, and Open Graph default to `https://svgoptimizer.site` when `NEXT_PUBLIC_SITE_URL` is not set. On Vercel, set `NEXT_PUBLIC_SITE_URL` to your custom domain (or leave unset to use that default).
+**Production:** [svgoptimizer.site](https://svgoptimizer.site) — canonical URLs, sitemap, and Open Graph default to `https://svgoptimizer.site` when `NEXT_PUBLIC_SITE_URL` is not set.
+
+- **Contact email** defaults to **`info@svgoptimizer.site`** (footer + `/contact` mailto form). Override with `NEXT_PUBLIC_CONTACT_EMAIL` in your host’s env panel if needed.
+- **Vercel / Hostinger / other:** set `NEXT_PUBLIC_SITE_URL=https://svgoptimizer.site` if the default should differ (e.g. preview URLs). The contact flow uses the visitor’s mail app (`mailto:`)—no SMTP in this repo; create the mailbox and MX records in Hostinger so replies work.
 
 ### Styles / scripts not loading? (unstyled page, console errors on `layout.css`, `page.js`, `main-app`)
 

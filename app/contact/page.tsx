@@ -32,8 +32,7 @@ export default function ContactPage() {
         <p className="mb-2 text-sm font-medium uppercase tracking-widest text-primary">Contact</p>
         <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl">Get in touch</h1>
         <p className="mb-10 max-w-2xl text-lg text-muted-foreground">
-          Questions about the optimizer, bug reports, feature ideas, or partnerships—we read every message
-          when contact channels are configured for this deployment.
+          Questions about the optimizer, bug reports, feature ideas, or partnerships—reach us by email below.
         </p>
 
         <div className="mb-12 grid gap-6 sm:grid-cols-2">

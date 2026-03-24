@@ -34,6 +34,16 @@ export function Footer() {
               </li>
             ))}
           </ul>
+          {siteConfig.contactEmail && (
+            <p className="mt-4 text-sm">
+              <a
+                href={`mailto:${siteConfig.contactEmail}`}
+                className="text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {siteConfig.contactEmail}
+              </a>
+            </p>
+          )}
         </div>
         <div className="md:col-span-2 lg:col-span-1">
           <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">

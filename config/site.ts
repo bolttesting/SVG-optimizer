@@ -3,10 +3,19 @@
  * Override on Vercel with env for previews or domain changes.
  */
 const DEFAULT_SITE_URL = 'https://svgoptimizer.site'
+const DEFAULT_CONTACT_EMAIL = 'info@svgoptimizer.site'
 
 function siteUrlFromEnv(): string {
   const v = process.env.NEXT_PUBLIC_SITE_URL?.trim()
   return v && v.length > 0 ? v.replace(/\/$/, '') : DEFAULT_SITE_URL
+}
+
+/** Public contact address. Unset env → default; empty string env → hide email UI (advanced). */
+function contactEmailFromEnv(): string {
+  const raw = process.env.NEXT_PUBLIC_CONTACT_EMAIL
+  if (raw === undefined) return DEFAULT_CONTACT_EMAIL
+  const t = raw.trim()
+  return t.length > 0 ? t : ''
 }
 
 export const siteConfig = {
@@ -20,8 +29,8 @@ export const siteConfig = {
   twitterHandle: (process.env.NEXT_PUBLIC_TWITTER_HANDLE ?? '').trim(),
   keywords: 'svg optimizer, svg minifier, svg compressor, optimize svg, svg tool, svg online',
   author: 'SVG Optimizer',
-  /** Set in .env.local — enables mailto + contact form on /contact */
-  contactEmail: (process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? '').trim(),
+  /** Mailto + /contact form. Default info@svgoptimizer.site; override with NEXT_PUBLIC_CONTACT_EMAIL. */
+  contactEmail: contactEmailFromEnv(),
   contactGithubUrl: (process.env.NEXT_PUBLIC_CONTACT_GITHUB ?? '').trim(),
 }
 
