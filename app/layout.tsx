@@ -20,10 +20,8 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase,
-  icons: {
-    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
-    shortcut: '/icon.svg',
-  },
+  // Tab + PWA icons: app/favicon.ico, app/icon.png, app/apple-icon.png (Next.js file conventions).
+  // Vector brand mark remains at public/icon.svg for direct use.
   title: {
     default: siteConfig.title,
     template: `%s | ${siteConfig.name}`,
