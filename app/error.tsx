@@ -1,5 +1,13 @@
 'use client'
 
+function isChunkLoadError(message: string): boolean {
+  return (
+    /Loading chunk \d+ failed/i.test(message) ||
+    /ChunkLoadError/i.test(message) ||
+    /Failed to fetch dynamically imported module/i.test(message)
+  )
+}
+
 export default function Error({
   error,
   reset,
@@ -7,6 +15,9 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const msg = error.message || ''
+  const chunkStale = isChunkLoadError(msg)
+
   return (
     <div
       style={{
@@ -19,6 +30,13 @@ export default function Error({
       }}
     >
       <h1 style={{ fontSize: '1.25rem', marginBottom: 8 }}>Something went wrong</h1>
+      {chunkStale && (
+        <p style={{ fontSize: 14, lineHeight: 1.5, marginBottom: 12, opacity: 0.9 }}>
+          This usually means the site was updated while this tab was open, so the browser asked for an
+          old script that no longer exists. Do a <strong>full reload</strong> (Ctrl+Shift+R or
+          Cmd+Shift+R) or use <strong>Reload page</strong> below.
+        </p>
+      )}
       <pre
         style={{
           fontSize: 13,
@@ -28,22 +46,41 @@ export default function Error({
           opacity: 0.85,
         }}
       >
-        {error.message}
+        {msg}
       </pre>
-      <button
-        type="button"
-        onClick={() => reset()}
-        style={{
-          padding: '8px 16px',
-          fontSize: 14,
-          cursor: 'pointer',
-          borderRadius: 8,
-          border: '1px solid #cbd5e1',
-          background: '#fff',
-        }}
-      >
-        Try again
-      </button>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        {chunkStale && (
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '8px 16px',
+              fontSize: 14,
+              cursor: 'pointer',
+              borderRadius: 8,
+              border: '1px solid #2563eb',
+              background: '#2563eb',
+              color: '#fff',
+            }}
+          >
+            Reload page
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => reset()}
+          style={{
+            padding: '8px 16px',
+            fontSize: 14,
+            cursor: 'pointer',
+            borderRadius: 8,
+            border: '1px solid #cbd5e1',
+            background: '#fff',
+          }}
+        >
+          Try again
+        </button>
+      </div>
     </div>
   )
 }
