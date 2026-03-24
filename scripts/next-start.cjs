@@ -21,9 +21,13 @@ const standaloneDir = path.join(root, '.next', 'standalone')
 const standaloneServer = path.join(standaloneDir, 'server.js')
 const nextCli = path.join(root, 'node_modules', 'next', 'dist', 'bin', 'next')
 
+console.error(`[svg-optimizer] cwd=${process.cwd()}`)
+console.error(`[svg-optimizer] project=${root}`)
+console.error(`[svg-optimizer] standalone server.js exists=${fs.existsSync(standaloneServer)}`)
+
 if (fs.existsSync(standaloneServer)) {
   console.error(
-    `[svg-optimizer] standalone ${bindHost}:${port} (set LISTEN_HOST=127.0.0.1 if LiteSpeed needs localhost)`
+    `[svg-optimizer] standalone bind ${bindHost}:${port} (try LISTEN_HOST=127.0.0.1 if LiteSpeed returns 503)`
   )
   const child = spawn(process.execPath, ['server.js'], {
     cwd: standaloneDir,
@@ -31,6 +35,7 @@ if (fs.existsSync(standaloneServer)) {
     env: {
       ...process.env,
       PORT: port,
+      // Next standalone reads HOSTNAME; Linux often sets it to the machine name — override for TCP bind.
       HOSTNAME: bindHost,
     },
     windowsHide: true,

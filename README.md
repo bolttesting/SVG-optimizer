@@ -47,7 +47,14 @@ Usually **LiteSpeed/nginx cannot reach your Node process** (wrong port, wrong bi
 4. **Logs** — Check **Node / deployment logs** after “Starting…” for crashes (OOM, errors). If you see **two** “Next.js 14” banners back-to-back, the start command may be running twice—leave **one** process only.
 5. **SSH sanity check** (if available): `curl -sI http://127.0.0.1:3000` (use your real **PORT**). If that fails, the proxy is not the problem—Node isn’t listening. If it succeeds but the site still 503, fix the **web server → Node** mapping in the panel.
 6. **Restart** the Node app after changing env vars.
-7. **503 keeps coming back** — In Hostinger env add **`PORT=3000`** (if not injected) and **`LISTEN_HOST=127.0.0.1`**, redeploy/restart. LiteSpeed often proxies only to localhost; **`npm run start`** must stay as the start command (uses `scripts/next-start.cjs`).
+7. **503 keeps coming back** — Add **`LISTEN_HOST=127.0.0.1`** in env if LiteSpeed only talks to localhost; match **`PORT`** to the panel. Redeploy/restart.
+
+#### Hostinger startup file (common 503 cause)
+
+- **Application root** must be the repo root (folder with **`package.json`** after `git pull` / deploy).
+- **Start** using either **`npm run start`** or set **Application startup file** to **`hostinger-entry.js`** in that same root. Both run `scripts/next-start.cjs` and set **`HOSTNAME`** for the standalone server.
+- **Avoid** pointing the panel only at **`.next/standalone/server.js`** unless you also set **`HOSTNAME=127.0.0.1`** (or **`0.0.0.0`**) and **`PORT`** in Environment variables. Otherwise the OS **`HOSTNAME`** (machine name) can be used for binding and LiteSpeed returns **503**.
+- After deploy, logs should include **`[svg-optimizer] standalone server.js exists=true`**. If **`exists=false`**, the server did not run a full **`npm run build`** (with the copy step). See **`.next/standalone/HOSTINGER-README.txt`** on the server after build.
 
 ### Styles / scripts not loading? (unstyled page, console errors on `layout.css`, `page.js`, `main-app`)
 

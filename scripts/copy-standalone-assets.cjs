@@ -29,3 +29,22 @@ if (fs.existsSync(publicSrc)) {
 }
 
 console.error('[copy-standalone-assets] public + .next/static → .next/standalone')
+
+const hintPath = path.join(standalone, 'HOSTINGER-README.txt')
+fs.writeFileSync(
+  hintPath,
+  [
+    'Hostinger / LiteSpeed 503 fix',
+    '-----------------------------',
+    '1) Prefer startup file at PROJECT ROOT: hostinger-entry.js',
+    '   (or command: npm run start)',
+    '',
+    '2) If you MUST use this folder\'s server.js as startup file, set in hPanel Environment:',
+    '   HOSTNAME=127.0.0.1',
+    '   PORT=3000   (same as "Application port" in the panel)',
+    '',
+    '   Otherwise the OS hostname can be used for binding and LiteSpeed will get 503.',
+    '',
+  ].join('\n'),
+  'utf8'
+)
