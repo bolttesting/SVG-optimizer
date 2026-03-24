@@ -52,15 +52,16 @@ function AdminLoginForm() {
         <CardTitle>Admin sign in</CardTitle>
         <CardDescription>
           Use the exact value of <code className="text-xs">ADMIN_SECRET</code> from your environment (
-          <code className="text-xs">.env.local</code> locally, Vercel project settings in production). Leading or
-          trailing spaces in the env value are ignored when you sign in.
+          <code className="text-xs">.env.local</code> locally, or your host’s environment variables in
+          production). Leading or trailing spaces in the env value are ignored when you sign in.
         </CardDescription>
       </CardHeader>
       <CardContent>
         {configError && (
           <p className="mb-4 rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
             The server doesn’t see <code className="text-xs">ADMIN_SECRET</code>. Add it in{' '}
-            <code className="text-xs">.env.local</code> (local) or Vercel → Environment Variables, then{' '}
+            <code className="text-xs">.env.local</code> (local) or your host’s environment-variables panel,
+            then{' '}
             <strong>restart</strong> the dev server or redeploy, and open{' '}
             <Link href="/admin/login" className="underline">
               /admin/login

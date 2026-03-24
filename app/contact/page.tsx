@@ -47,34 +47,29 @@ export default function ContactPage() {
                   <CardTitle className="text-lg">Email</CardTitle>
                 </div>
                 <CardDescription>
-                  {smtpEnabled
-                    ? 'Send through the site (SMTP) or open a draft in your own email app.'
-                    : 'Reach us directly or compose a message in your email app below.'}
+                  {smtpEnabled ? (
+                    <>
+                      Use the form below. Messages arrive in our inbox at{' '}
+                      <span className="font-medium text-foreground">{email}</span>
+                      —we’ll reply from there to the address you provide.
+                    </>
+                  ) : (
+                    'Reach us directly or compose a message in your email app below.'
+                  )}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-8">
-                <p className="text-sm">
-                  <a
-                    href={`mailto:${email}`}
-                    className="font-medium text-primary underline-offset-4 hover:underline"
-                  >
-                    {email}
-                  </a>
-                </p>
-                {smtpEnabled && (
-                  <>
-                    <ContactSmtpForm />
-                    <div className="relative">
-                      <div className="absolute inset-0 flex items-center" aria-hidden>
-                        <span className="w-full border-t border-border" />
-                      </div>
-                      <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-card px-2 text-muted-foreground">Or use your mail app</span>
-                      </div>
-                    </div>
-                  </>
+              <CardContent className={smtpEnabled ? 'space-y-4' : 'space-y-8'}>
+                {!smtpEnabled && (
+                  <p className="text-sm">
+                    <a
+                      href={`mailto:${email}`}
+                      className="font-medium text-primary underline-offset-4 hover:underline"
+                    >
+                      {email}
+                    </a>
+                  </p>
                 )}
-                <MailtoForm to={email} />
+                {smtpEnabled ? <ContactSmtpForm /> : <MailtoForm to={email} />}
               </CardContent>
             </Card>
           ) : (

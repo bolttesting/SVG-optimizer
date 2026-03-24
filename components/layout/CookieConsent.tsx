@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { CONSENT_STORAGE_KEY, type CookieConsentValue, parseConsent } from '@/lib/cookies/consent'
 import { Button } from '@/components/ui/button'
+import { siteConfig } from '@/config/site'
 
 export function CookieConsent() {
   const [visible, setVisible] = useState(false)
@@ -44,8 +45,18 @@ export function CookieConsent() {
         <div className="text-sm text-muted-foreground">
           <p className="mb-1 font-medium text-foreground">Cookies & privacy</p>
           <p>
-            We use <strong>essential</strong> cookies to remember this choice and keep the site working.
-            Optional <strong>analytics</strong> cookies help us understand traffic—only if you accept.
+            This applies to{' '}
+            <strong className="text-foreground">
+              {(() => {
+                try {
+                  return new URL(siteConfig.url).hostname
+                } catch {
+                  return 'this site'
+                }
+              })()}
+            </strong>
+            . We use <strong>essential</strong> cookies to remember this choice and keep the site
+            working. Optional <strong>analytics</strong> help us understand traffic—only if you accept.
             Read more in our{' '}
             <Link href="/privacy" className="text-primary underline underline-offset-2">
               Privacy Policy

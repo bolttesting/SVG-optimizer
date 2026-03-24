@@ -5,6 +5,7 @@ import { ADMIN_SESSION_COOKIE } from '@/lib/auth/constants'
 import { getAdminSecret } from '@/lib/auth/get-admin-secret'
 import { verifyAdminJwt } from '@/lib/auth/verify-admin-jwt'
 import { createSupabaseService } from '@/lib/supabase/blog-client'
+import { siteConfig } from '@/config/site'
 
 type SummaryRow = {
   total_records: number
@@ -14,6 +15,14 @@ type SummaryRow = {
 }
 
 export default async function AdminStatsPage() {
+  const plausibleDomain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN?.trim() ?? ''
+  let siteHost = 'svgoptimizer.site'
+  try {
+    siteHost = new URL(siteConfig.url).hostname
+  } catch {
+    /* keep default */
+  }
+
   const secret = getAdminSecret()
   const token = cookies().get(ADMIN_SESSION_COOKIE)?.value
   if (!secret || !(await verifyAdminJwt(token, secret))) {
@@ -107,8 +116,18 @@ export default async function AdminStatsPage() {
       )}
 
       <p className="mt-8 text-xs text-muted-foreground">
-        For page-level analytics, use Plausible (<code className="rounded bg-muted px-1">NEXT_PUBLIC_PLAUSIBLE_DOMAIN</code>)
-        or Vercel Analytics.
+        <strong className="font-medium text-foreground">Public page analytics:</strong> optional Plausible
+        loads on <code className="rounded bg-muted px-1">{siteHost}</code> only after visitors accept
+        analytics.{' '}
+        {plausibleDomain ? (
+          <>
+            Configured Plausible domain:{' '}
+            <code className="rounded bg-muted px-1">{plausibleDomain}</code>.
+          </>
+        ) : (
+          <>No Plausible site domain is set in this deployment—the script will not load.</>
+        )}{' '}
+        You can also use analytics from your hosting provider if available.
       </p>
     </div>
   )

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Container } from '@/components/layout/Container'
 import type { Metadata } from 'next'
+import { siteConfig } from '@/config/site'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -8,10 +9,14 @@ export const metadata: Metadata = {
 }
 
 export default function PrivacyPage() {
+  const siteUrl = siteConfig.url
+  const plausibleDomain = process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN?.trim() ?? ''
+  const contactEmail = siteConfig.contactEmail
+
   return (
     <Container className="max-w-3xl py-12 md:py-16">
       <h1 className="mb-2 text-4xl font-bold tracking-tight">Privacy Policy</h1>
-      <p className="mb-10 text-muted-foreground">Last updated: March 2025</p>
+      <p className="mb-10 text-muted-foreground">Last updated: March 2026</p>
 
       <div className="prose prose-neutral dark:prose-invert max-w-none space-y-10">
         <section>
@@ -35,7 +40,15 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-xl font-semibold">Cookies & local storage</h2>
           <p className="text-muted-foreground">
-            We may store a <strong>cookie consent choice</strong> in{' '}
+            For{' '}
+            <a
+              href={siteUrl}
+              className="text-primary underline-offset-4 hover:underline"
+              rel="noopener noreferrer"
+            >
+              {siteUrl}
+            </a>
+            , we may store a <strong>cookie consent choice</strong> in{' '}
             <code className="text-sm">localStorage</code> and a small <strong>cookie</strong> (same
             name) so we remember whether you accepted only essential cookies or analytics as well.
             Theme preference (light/dark) may also be stored locally in your browser.
@@ -45,9 +58,28 @@ export default function PrivacyPage() {
               <strong>Essential</strong> — required to remember your consent and basic preferences.
             </li>
             <li>
-              <strong>Analytics</strong> — loaded only if you choose &quot;Accept all&quot; and{' '}
-              <code className="text-sm">NEXT_PUBLIC_PLAUSIBLE_DOMAIN</code> is configured (e.g.
-              Plausible, privacy-friendly analytics).
+              <strong>Analytics</strong> —{' '}
+              {plausibleDomain ? (
+                <>
+                  loaded only if you choose &quot;Accept all&quot;. We use{' '}
+                  <a
+                    href="https://plausible.io/privacy-focused-web-analytics"
+                    className="text-primary underline-offset-4 hover:underline"
+                    rel="noopener noreferrer"
+                  >
+                    Plausible
+                  </a>
+                  , a privacy-oriented analytics service. Page views are associated with the site
+                  domain <code className="text-sm">{plausibleDomain}</code>; the script is loaded
+                  from plausible.io.
+                </>
+              ) : (
+                <>
+                  optional third-party analytics (Plausible) loads only if you choose
+                  &quot;Accept all&quot; and we have turned it on for this site. This deployment does
+                  not include a Plausible site domain, so no analytics script is loaded.
+                </>
+              )}
             </li>
           </ul>
         </section>
@@ -55,15 +87,31 @@ export default function PrivacyPage() {
         <section>
           <h2 className="text-xl font-semibold">Changing your mind</h2>
           <p className="text-muted-foreground">
-            Clear site data for this origin in your browser settings, or open the site in a private
-            window, to see the cookie banner again and choose a new option.
+            Clear site data for <code className="text-sm">{new URL(siteUrl).hostname}</code> in your
+            browser settings, or open the site in a private window, to see the cookie banner again
+            and choose a new option.
           </p>
         </section>
 
         <section>
           <h2 className="text-xl font-semibold">Contact</h2>
           <p className="text-muted-foreground">
-            Questions? Use the{' '}
+            Questions?{' '}
+            {contactEmail ? (
+              <>
+                Email{' '}
+                <a
+                  href={`mailto:${contactEmail}`}
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  {contactEmail}
+                </a>
+                {' '}
+                or use the{' '}
+              </>
+            ) : (
+              <>Use the </>
+            )}
             <Link href="/contact" className="text-primary underline-offset-4 hover:underline">
               contact page
             </Link>

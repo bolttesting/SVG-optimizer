@@ -63,7 +63,16 @@ export function Footer() {
       </div>
       <div className="border-t border-border/60 py-6">
         <p className="container text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} {siteConfig.name}. Open tooling for the web.
+          © {new Date().getFullYear()} {siteConfig.name}. Designed & developed by{' '}
+          <a
+            href="https://logixcontact.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline-offset-4 hover:underline"
+          >
+            Logix Contact
+          </a>
+          .
         </p>
       </div>
     </footer>

@@ -47,11 +47,6 @@ export function ContactSmtpForm() {
 
   return (
     <form onSubmit={(e) => void onSubmit(e)} className="space-y-4">
-      <p className="text-sm font-medium text-foreground">Send from this site</p>
-      <p className="text-xs text-muted-foreground">
-        Sent through our mail server (SMTP). We’ll reply to the address you enter below.
-      </p>
-
       {/* Honeypot — hidden; if filled, server discards silently */}
       <input
         type="text"

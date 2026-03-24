@@ -36,7 +36,7 @@ export default async function BlogIndexPage() {
         {posts.length === 0 ? (
           <p className="text-muted-foreground">
             No posts yet. Add markdown under <code className="text-xs">content/blog</code> or publish from
-            the admin dashboard (with Supabase configured on Vercel).
+            the admin dashboard (with Supabase configured on your host).
           </p>
         ) : (
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
