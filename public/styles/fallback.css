@@ -1,0 +1,104 @@
+/**
+ * Fallback layout when /_next/static/css/* fails to load (ad blockers, extensions).
+ * Full Tailwind still loads from Next when available; this file is plain CSS from /public.
+ */
+:root {
+  --f-bg: #fafafa;
+  --f-fg: #0f172a;
+  --f-muted: #64748b;
+  --f-border: #e2e8f0;
+  --f-primary: #2563eb;
+  --f-primary-fg: #ffffff;
+  --f-card: #ffffff;
+}
+
+html.dark:root,
+html.dark {
+  --f-bg: #0f172a;
+  --f-fg: #f8fafc;
+  --f-muted: #94a3b8;
+  --f-border: #334155;
+  --f-primary: #3b82f6;
+  --f-primary-fg: #0f172a;
+  --f-card: #1e293b;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    sans-serif;
+  line-height: 1.5;
+  background: var(--f-bg);
+  color: var(--f-fg);
+}
+
+/* Approximate Tailwind .container */
+.container {
+  width: 100%;
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* Minimal flex helpers used in header/layout */
+.flex {
+  display: flex;
+}
+.flex-col {
+  flex-direction: column;
+}
+.flex-wrap {
+  flex-wrap: wrap;
+}
+.items-center {
+  align-items: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.gap-1 {
+  gap: 0.25rem;
+}
+.gap-2 {
+  gap: 0.5rem;
+}
+.gap-4 {
+  gap: 1rem;
+}
+.min-h-screen {
+  min-height: 100vh;
+}
+
+a {
+  color: var(--f-primary);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Basic card / bordered regions when utilities missing */
+.border,
+[class*='border-'] {
+  border-color: var(--f-border);
+}
