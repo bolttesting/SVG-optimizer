@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
 import { ADMIN_SESSION_COOKIE } from '@/lib/auth/constants'
+import { getAdminSecret } from '@/lib/auth/get-admin-secret'
 import { signAdminJwt } from '@/lib/auth/sign-admin-jwt'
 
 export async function POST(request: Request) {
-  const secret = process.env.ADMIN_SECRET
+  const secret = getAdminSecret()
   if (!secret) {
     return NextResponse.json(
       { error: 'Server is not configured for admin login (missing ADMIN_SECRET).' },
@@ -18,8 +19,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const password = body.password ?? ''
-  if (password !== secret) {
+  const password = (body.password ?? '').trim()
+  if (!password || password !== secret) {
     return NextResponse.json({ error: 'Invalid password' }, { status: 401 })
   }
 

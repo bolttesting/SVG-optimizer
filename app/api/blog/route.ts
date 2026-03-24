@@ -4,6 +4,7 @@ import path from 'path'
 import { revalidatePath } from 'next/cache'
 import matter from 'gray-matter'
 import { ADMIN_SESSION_COOKIE } from '@/lib/auth/constants'
+import { getAdminSecret } from '@/lib/auth/get-admin-secret'
 import { verifyAdminJwt } from '@/lib/auth/verify-admin-jwt'
 import { sanitizeSlugForBlog } from '@/lib/blog/slug'
 import { createSupabaseService } from '@/lib/supabase/blog-client'
@@ -32,7 +33,7 @@ function supabaseWriteEnabled(): boolean {
 }
 
 export async function POST(request: NextRequest) {
-  const adminSecret = process.env.ADMIN_SECRET
+  const adminSecret = getAdminSecret()
   if (!adminSecret) {
     return NextResponse.json(
       {
@@ -182,7 +183,7 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const adminSecret = process.env.ADMIN_SECRET
+  const adminSecret = getAdminSecret()
   if (!adminSecret) {
     return NextResponse.json({ error: 'ADMIN_SECRET is not configured' }, { status: 503 })
   }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { ADMIN_SESSION_COOKIE } from '@/lib/auth/constants'
+import { getAdminSecret } from '@/lib/auth/get-admin-secret'
 import { verifyAdminJwt } from '@/lib/auth/verify-admin-jwt'
 
 export async function middleware(request: NextRequest) {
@@ -10,7 +11,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  const secret = process.env.ADMIN_SECRET
+  const secret = getAdminSecret()
 
   if (pathname === '/admin/login' || pathname.startsWith('/admin/login/')) {
     const existing = request.cookies.get(ADMIN_SESSION_COOKIE)?.value

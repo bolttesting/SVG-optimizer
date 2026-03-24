@@ -3,6 +3,7 @@
 import { useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { Eye, EyeOff } from 'lucide-react'
 import { Container } from '@/components/layout/Container'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,6 +17,7 @@ function AdminLoginForm() {
   const configError = searchParams.get('error') === 'config'
 
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [message, setMessage] = useState('')
 
@@ -49,17 +51,17 @@ function AdminLoginForm() {
       <CardHeader>
         <CardTitle>Admin sign in</CardTitle>
         <CardDescription>
-          Use the password configured as <code className="text-xs">ADMIN_SECRET</code> in your server
-          environment (e.g. <code className="text-xs">.env.local</code>).
+          Use the exact value of <code className="text-xs">ADMIN_SECRET</code> from your environment (
+          <code className="text-xs">.env.local</code> locally, Vercel project settings in production). Leading or
+          trailing spaces in the env value are ignored when you sign in.
         </CardDescription>
       </CardHeader>
       <CardContent>
         {configError && (
           <p className="mb-4 rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            The server doesn’t see <code className="text-xs">ADMIN_SECRET</code>. Add it to{' '}
-            <code className="text-xs">.env.local</code> in the <code className="text-xs">svg-optimizer</code>{' '}
-            folder, then <strong>stop and restart</strong> <code className="text-xs">npm run dev</code> and
-            open{' '}
+            The server doesn’t see <code className="text-xs">ADMIN_SECRET</code>. Add it in{' '}
+            <code className="text-xs">.env.local</code> (local) or Vercel → Environment Variables, then{' '}
+            <strong>restart</strong> the dev server or redeploy, and open{' '}
             <Link href="/admin/login" className="underline">
               /admin/login
             </Link>{' '}
@@ -69,14 +71,27 @@ function AdminLoginForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="pr-10"
+                required
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-1/2 h-9 w-9 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" aria-hidden /> : <Eye className="h-4 w-4" aria-hidden />}
+              </Button>
+            </div>
           </div>
           <Button type="submit" disabled={status === 'loading' || configError} className="w-full">
             {status === 'loading' ? 'Signing in…' : 'Sign in'}

@@ -2,6 +2,7 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ADMIN_SESSION_COOKIE } from '@/lib/auth/constants'
+import { getAdminSecret } from '@/lib/auth/get-admin-secret'
 import { verifyAdminJwt } from '@/lib/auth/verify-admin-jwt'
 import { createSupabaseService } from '@/lib/supabase/blog-client'
 
@@ -13,7 +14,7 @@ type SummaryRow = {
 }
 
 export default async function AdminStatsPage() {
-  const secret = process.env.ADMIN_SECRET
+  const secret = getAdminSecret()
   const token = cookies().get(ADMIN_SESSION_COOKIE)?.value
   if (!secret || !(await verifyAdminJwt(token, secret))) {
     redirect('/admin/login?from=/admin/stats')

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { randomUUID } from 'crypto'
 import { ADMIN_SESSION_COOKIE } from '@/lib/auth/constants'
+import { getAdminSecret } from '@/lib/auth/get-admin-secret'
 import { verifyAdminJwt } from '@/lib/auth/verify-admin-jwt'
 import { createSupabaseService } from '@/lib/supabase/blog-client'
 
@@ -20,7 +21,7 @@ function safeFileName(name: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  const adminSecret = process.env.ADMIN_SECRET
+  const adminSecret = getAdminSecret()
   if (!adminSecret) {
     return NextResponse.json({ error: 'ADMIN_SECRET not configured' }, { status: 503 })
   }
