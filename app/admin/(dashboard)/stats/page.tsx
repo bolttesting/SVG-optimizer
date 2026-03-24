@@ -38,12 +38,17 @@ export default async function AdminStatsPage() {
     if (error) {
       fetchError = error.message
     } else if (data && Array.isArray(data) && data[0]) {
-      const r = data[0] as Record<string, number>
+      const r = data[0] as Record<string, unknown>
+      const num = (v: unknown) => {
+        if (typeof v === 'bigint') return Number(v)
+        const n = Number(v ?? 0)
+        return Number.isFinite(n) ? n : 0
+      }
       summary = {
-        total_records: Number(r.total_records ?? 0),
-        unique_visitors: Number(r.unique_visitors ?? 0),
-        visits_last_7d: Number(r.visits_last_7d ?? 0),
-        visits_last_24h: Number(r.visits_last_24h ?? 0),
+        total_records: num(r.total_records),
+        unique_visitors: num(r.unique_visitors),
+        visits_last_7d: num(r.visits_last_7d),
+        visits_last_24h: num(r.visits_last_24h),
       }
     }
   }
