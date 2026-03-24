@@ -1,12 +1,6 @@
 'use client'
 
-function isChunkLoadError(message: string): boolean {
-  return (
-    /Loading chunk \d+ failed/i.test(message) ||
-    /ChunkLoadError/i.test(message) ||
-    /Failed to fetch dynamically imported module/i.test(message)
-  )
-}
+import { isChunkLoadError } from '@/lib/chunk-load-error'
 
 export default function Error({
   error,
