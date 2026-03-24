@@ -35,6 +35,15 @@ Then open **http://127.0.0.1:3000** (the dev script uses this host to avoid some
 - **Optional SMTP (Hostinger, etc.):** set `SMTP_HOST`, `SMTP_PORT` (usually `465`), `SMTP_USER`, `SMTP_PASS` on the server to enable **Send message** on `/contact` (Nodemailer). Hostinger: outgoing **smtp.hostinger.com**, port **465**, SSL. Use the mailbox password for `SMTP_PASS`. Never commit real passwords; set them only in the host’s env UI.
 - **Vercel / Hostinger / other:** set `NEXT_PUBLIC_SITE_URL=https://svgoptimizer.site` when the public URL differs from the default.
 
+### 503 Service Unavailable (Node hosting)
+
+Usually the **reverse proxy cannot reach your app** (nothing listening on the port it expects).
+
+1. **Port** — `npm start` uses the **`PORT`** environment variable when your host sets it (default `3000`). If you overrode the start command with `next start -p 3000` only, switch back to **`npm start`** or **`npm run start`** so `PORT` is respected.
+2. **Build** — Run **`npm run build`** before start; missing `.next` → process exits → 503.
+3. **Logs** — In Hostinger (or your panel), open **application / Node logs** for crash messages (out-of-memory, missing env, etc.).
+4. **Restart** — After changing env vars, **restart** the Node application.
+
 ### Styles / scripts not loading? (unstyled page, console errors on `layout.css`, `page.js`, `main-app`)
 
 1. **Ad blockers & privacy extensions** — uBlock, AdGuard, Brave Shields, etc. often block Next.js **dev** filenames like `page.js` or `webpack.js`. **Disable them for `127.0.0.1`** or use a private window with extensions off.
