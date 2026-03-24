@@ -48,13 +48,13 @@ export function ControlsPanel({
             Reset options
           </Button>
         </div>
-        <div className="grid grid-cols-1 gap-2 pt-0 sm:grid-cols-3 sm:pt-1">
+        <div className="flex flex-col gap-2 pt-0 sm:pt-1">
           {(['max-compression', 'balanced', 'quality'] as PresetType[]).map((preset) => (
             <Button
               key={preset}
               variant="outline"
               size="sm"
-              className="min-h-10 w-full justify-center"
+              className="h-auto min-h-11 w-full justify-center whitespace-normal px-3 py-2.5 text-center text-sm leading-snug"
               onClick={() => onApplyPreset(preset)}
               disabled={isProcessing}
             >

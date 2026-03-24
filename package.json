@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=20.0.0 <25"
+    "node": ">=22.0.0 <25"
   },
   "scripts": {
     "dev": "next dev -p 3000",
+    "dev:clean": "node scripts/clean-next.cjs && next dev -p 3000",
     "dev:127": "next dev -H 127.0.0.1 -p 3000",
     "build": "next build && node scripts/copy-standalone-assets.cjs",
     "start": "node scripts/next-start.cjs",
@@ -24,7 +25,7 @@
     "gray-matter": "^4.0.3",
     "jszip": "^3.10.1",
     "lucide-react": "^0.454.0",
-    "next": "14.2.18",
+    "next": "14.2.35",
     "nodemailer": "^8.0.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -38,13 +39,13 @@
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",
-    "@types/node": "^20.17.0",
+    "@types/node": "^22.10.0",
     "@types/nodemailer": "^7.0.11",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.18",
+    "eslint-config-next": "14.2.35",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.15",
     "typescript": "^5.6.3"

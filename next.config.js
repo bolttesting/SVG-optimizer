@@ -6,6 +6,10 @@ loadEnvConfig(path.join(__dirname))
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Browsers still request /favicon.ico by default; icon lives in public/icon.svg.
+  async rewrites() {
+    return [{ source: '/favicon.ico', destination: '/icon.svg' }]
+  },
   // Traced server bundle — reliable on many Node hosts (Hostinger, Docker).
   output: 'standalone',
   images: {

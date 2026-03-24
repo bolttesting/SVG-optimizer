@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { Inter } from 'next/font/google'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { CookieConsent } from '@/components/layout/CookieConsent'
@@ -6,6 +7,8 @@ import { ConditionalAnalytics } from '@/components/layout/ConditionalAnalytics'
 import { UsageAnalyticsBeacon } from '@/components/layout/UsageAnalyticsBeacon'
 import { siteConfig } from '@/config/site'
 import './globals.css'
+
+const inter = Inter({ subsets: ['latin'], display: 'swap' })
 
 const metadataBase = new URL(`${siteConfig.url.replace(/\/$/, '')}/`)
 
@@ -17,6 +20,10 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase,
+  icons: {
+    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+    shortcut: '/icon.svg',
+  },
   title: {
     default: siteConfig.title,
     template: `%s | ${siteConfig.name}`,
@@ -42,7 +49,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full overflow-x-clip" suppressHydrationWarning>
       <body
-        className="relative z-0 flex min-h-screen min-w-0 flex-col overflow-x-clip font-sans antialiased"
+        className={`${inter.className} relative z-0 flex min-h-screen min-w-0 flex-col overflow-x-clip font-sans antialiased`}
         suppressHydrationWarning
       >
         <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">

@@ -8,7 +8,7 @@ A free, client-side SVG optimization tool. Reduce file size by up to 70% while p
 - **Live preview** — Toggle between original and optimized views
 - **Customizable settings** — Precision, remove comments/metadata, minify IDs, and more
 - **Presets** — Max Compression, Balanced, Quality
-- **Export options** — Download as SVG or ZIP (batch)
+- **Export options** — Download as SVG or ZIP (batch); **PNG / WebP** raster export in the browser (canvas)
 - **Code viewer** — View and copy optimized SVG markup
 
 ## Tech Stack
@@ -20,6 +20,13 @@ A free, client-side SVG optimization tool. Reduce file size by up to 70% while p
 - Zustand
 - react-dropzone, JSZip, file-saver
 
+### Versions (important)
+
+| Piece | Version | Notes |
+|--------|---------|--------|
+| **Next.js** | **14.2.x** (see `package.json`) | There is **no** “Next.js 24”. Major lines are 14, 15, … |
+| **Node.js** | **24.x recommended** (`.nvmrc` = `24`) | **`engines`** allows **22–24** so local dev works on common installs. Use **24** on Hostinger when the panel offers it. |
+
 ## Getting Started
 
 ```bash
@@ -29,7 +36,7 @@ npm run dev
 
 Then open **http://127.0.0.1:3000** (the dev script uses this host to avoid some Windows / DNS issues).
 
-Use **Node.js 20 LTS or newer** (up to 24.x). **`package.json` `engines`** allows **`>=20 <25`** so Hostinger’s installer does not fail when the panel is on **20** or **22**; **`.nvmrc`** still recommends **24** for local dev. Pick **Node 24** in the host dropdown when available, otherwise **20 LTS** is fine.
+If the browser shows **Internal Server Error** or missing `*.js` chunks, stop the dev server, run **`npm run dev:clean`** (deletes `.next` then starts dev), and try again. Avoid running **`npm start`** without a successful **`npm run build`** first.
 
 **Production:** [svgoptimizer.site](https://svgoptimizer.site) — canonical URLs, sitemap, and Open Graph default to `https://svgoptimizer.site` when `NEXT_PUBLIC_SITE_URL` is not set.
 

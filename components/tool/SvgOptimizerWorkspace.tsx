@@ -3,12 +3,13 @@
 import { useCallback } from 'react'
 import { useOptimizerStore } from '@/store/useOptimizerStore'
 import { useOptimization } from '@/hooks/useOptimization'
-import { formatBytes } from '@/lib/utils'
+import { cn, formatBytes } from '@/lib/utils'
 import { UploadZone } from '@/components/tool/UploadZone'
 import { PreviewPane } from '@/components/tool/PreviewPane'
 import { ControlsPanel } from '@/components/tool/ControlsPanel'
 import { StatsDisplay } from '@/components/tool/StatsDisplay'
 import { DownloadButton } from '@/components/tool/DownloadButton'
+import { RasterExportPanel } from '@/components/tool/RasterExportPanel'
 import { CodeViewer } from '@/components/tool/CodeViewer'
 
 function generateId() {
@@ -87,8 +88,8 @@ export function SvgOptimizerWorkspace() {
   return (
     <section className="min-w-0 max-w-full overflow-x-clip py-8 sm:py-10 md:py-14">
       <div className="container mx-auto w-full min-w-0 max-w-7xl">
-        <div className="mx-auto max-w-xl space-y-5 sm:space-y-6 lg:max-w-none lg:grid lg:grid-cols-12 lg:gap-8 lg:space-y-0">
-          <div className="lg:col-span-4">
+        <div className="mx-auto max-w-xl space-y-5 sm:space-y-6 lg:max-w-none lg:grid lg:grid-cols-12 lg:gap-8 lg:space-y-0 xl:gap-10">
+          <div className="lg:col-span-3">
             <div className="rounded-2xl border border-border/80 bg-card/60 p-2 shadow-sm backdrop-blur-sm dark:bg-card/40">
               <UploadZone
                 onFilesAccepted={processFiles}
@@ -99,7 +100,7 @@ export function SvgOptimizerWorkspace() {
             </div>
           </div>
 
-          <div className="space-y-6 lg:col-span-5">
+          <div className="min-w-0 space-y-4 lg:col-span-6">
             {files.length > 1 && (
               <div className="-mx-1 flex gap-2 overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch]">
                 {files.map((f) => (
@@ -133,24 +134,45 @@ export function SvgOptimizerWorkspace() {
               />
             </div>
 
-            {showStats && (
-              <StatsDisplay
-                originalSize={selectedFile!.originalSize}
-                optimizedSize={selectedFile!.optimizedSize!}
+            {files.length > 0 && (
+              <RasterExportPanel
+                svg={selectedFile?.optimizedSvg ?? selectedFile?.originalSvg ?? null}
+                baseFileName={selectedFile?.file.name ?? 'image.svg'}
+                disabled={isProcessing}
+                placement="belowPreview"
               />
             )}
 
             {files.length > 0 && (
-              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-                <button
-                  type="button"
-                  onClick={runOptimization}
-                  disabled={isProcessing}
-                  className="w-full rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-md transition hover:bg-primary/90 disabled:opacity-50 sm:w-auto sm:py-2.5"
+              <div className="rounded-2xl border border-border/80 bg-card/60 shadow-sm backdrop-blur-sm dark:bg-card/40">
+                {showStats && (
+                  <StatsDisplay
+                    flush
+                    originalSize={selectedFile!.originalSize}
+                    optimizedSize={selectedFile!.optimizedSize!}
+                  />
+                )}
+                <div
+                  className={cn(
+                    'flex flex-col gap-2 p-3 sm:flex-row sm:flex-wrap sm:items-stretch sm:gap-3 sm:px-4 sm:py-3',
+                    showStats ? 'border-t border-border/60 bg-muted/10 dark:bg-muted/5' : 'bg-muted/10 dark:bg-muted/5'
+                  )}
                 >
-                  {isProcessing ? 'Optimizing…' : 'Run optimization'}
-                </button>
-                <DownloadButton files={files} disabled={isProcessing} />
+                  <button
+                    type="button"
+                    onClick={runOptimization}
+                    disabled={isProcessing}
+                    className="order-1 w-full rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-md transition hover:bg-primary/90 disabled:opacity-50 sm:order-none sm:w-auto sm:min-w-[11rem] sm:py-2.5"
+                  >
+                    {isProcessing ? 'Optimizing…' : 'Run optimization'}
+                  </button>
+                  <DownloadButton
+                    files={files}
+                    disabled={isProcessing}
+                    variant="outline"
+                    className="order-2 w-full border-primary/35 font-semibold hover:bg-primary/10 hover:text-foreground sm:order-none sm:w-auto sm:min-w-[11rem]"
+                  />
+                </div>
               </div>
             )}
 
@@ -159,7 +181,7 @@ export function SvgOptimizerWorkspace() {
             </div>
           </div>
 
-          <div className="lg:col-span-3 lg:sticky lg:top-20 lg:self-start">
+          <div className="min-w-0 lg:col-span-3 lg:sticky lg:top-20 lg:self-start">
             <ControlsPanel
               settings={settings}
               onSettingsChange={setSettings}

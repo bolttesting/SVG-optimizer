@@ -95,8 +95,8 @@ export function UploadZone({
         <Button
           type="button"
           variant="secondary"
-          size="sm"
-          className="pointer-events-auto touch-manipulation min-h-[44px] min-w-[44px]"
+          size="default"
+          className="pointer-events-auto touch-manipulation min-h-11 w-full max-w-md px-6 sm:w-auto sm:min-w-[14rem]"
           disabled={isProcessing}
           onClick={(e) => {
             e.stopPropagation()
@@ -110,7 +110,7 @@ export function UploadZone({
         </p>
       </div>
       {hasFiles && onClear && (
-        <Button variant="outline" size="sm" onClick={onClear} className="w-full">
+        <Button variant="outline" onClick={onClear} className="h-10 w-full font-medium">
           <X className="mr-2 h-4 w-4" />
           Clear selection
         </Button>

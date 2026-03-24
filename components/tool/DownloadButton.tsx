@@ -3,15 +3,17 @@
 import { saveAs } from 'file-saver'
 import JSZip from 'jszip'
 import { Download } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button, type ButtonProps } from '@/components/ui/button'
 import type { UploadedFile } from '@/types'
 
 interface DownloadButtonProps {
   files: UploadedFile[]
   disabled?: boolean
+  variant?: ButtonProps['variant']
+  className?: string
 }
 
-export function DownloadButton({ files, disabled }: DownloadButtonProps) {
+export function DownloadButton({ files, disabled, variant = 'default', className }: DownloadButtonProps) {
   const optimizedFiles = files.filter((f) => f.optimizedSvg && f.status === 'done')
 
   const downloadSingle = (file: UploadedFile) => {
@@ -42,9 +44,10 @@ export function DownloadButton({ files, disabled }: DownloadButtonProps) {
 
   return (
     <Button
+      variant={variant}
       onClick={downloadAll}
       disabled={disabled || optimizedFiles.length === 0}
-      className="w-full sm:w-auto"
+      className={className ?? 'w-full sm:w-auto'}
     >
       <Download className="mr-2 h-4 w-4" />
       {optimizedFiles.length <= 1

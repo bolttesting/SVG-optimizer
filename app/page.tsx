@@ -14,7 +14,7 @@ export default function HomePage() {
             Free SVG Optimizer
           </h1>
           <p className="mx-auto max-w-xl text-base text-muted-foreground sm:text-lg">
-            Shrink SVGs by up to 70% with live preview. Tune precision, presets, and batch export—
+            Shrink SVGs by up to 70% with live preview, export <strong className="font-medium text-foreground/90">PNG or WebP</strong> in your browser, and tune precision and presets—
             <span className="text-foreground/90"> your files stay under your control.</span>
           </p>
           <UsageCountUp />
