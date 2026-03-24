@@ -45,6 +45,7 @@ Usually **LiteSpeed/nginx cannot reach your Node process** (wrong port, wrong bi
 4. **Logs** — Check **Node / deployment logs** after “Starting…” for crashes (OOM, errors). If you see **two** “Next.js 14” banners back-to-back, the start command may be running twice—leave **one** process only.
 5. **SSH sanity check** (if available): `curl -sI http://127.0.0.1:3000` (use your real **PORT**). If that fails, the proxy is not the problem—Node isn’t listening. If it succeeds but the site still 503, fix the **web server → Node** mapping in the panel.
 6. **Restart** the Node app after changing env vars.
+7. **503 keeps coming back** — In Hostinger env add **`PORT=3000`** (if not injected) and **`LISTEN_HOST=127.0.0.1`**, redeploy/restart. LiteSpeed often proxies only to localhost; **`npm run start`** must stay as the start command (uses `scripts/next-start.cjs`).
 
 ### Styles / scripts not loading? (unstyled page, console errors on `layout.css`, `page.js`, `main-app`)
 
