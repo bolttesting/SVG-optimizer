@@ -37,12 +37,14 @@ Then open **http://127.0.0.1:3000** (the dev script uses this host to avoid some
 
 ### 503 Service Unavailable (Node hosting)
 
-Usually the **reverse proxy cannot reach your app** (nothing listening on the port it expects).
+Usually **LiteSpeed/nginx cannot reach your Node process** (wrong port, wrong bind address, or the app exited).
 
-1. **Port** — `npm start` uses the **`PORT`** environment variable when your host sets it (default `3000`). If you overrode the start command with `next start -p 3000` only, switch back to **`npm start`** or **`npm run start`** so `PORT` is respected.
-2. **Build** — Run **`npm run build`** before start; missing `.next` → process exits → 503.
-3. **Logs** — In Hostinger (or your panel), open **application / Node logs** for crash messages (out-of-memory, missing env, etc.).
-4. **Restart** — After changing env vars, **restart** the Node application.
+1. **Port** — Use **`npm run start`** so the app reads **`PORT`** from the panel (default `3000`). The Node.js screen **Application port** (or similar) must match **`PORT`** (often both should be **3000** unless the host assigns another port).
+2. **Do not set a misleading `HOST` env** — Some panels set **`HOST`** to your domain (e.g. `svgoptimizer.site`). That value is **not** a TCP bind address. This project only uses **`LISTEN_HOST`** / **`NEXT_LISTEN_HOST`** if you need to override listening (default **`0.0.0.0`**). If you still see 503, try **`LISTEN_HOST=127.0.0.1`** only when your host’s docs say to bind localhost for the reverse proxy.
+3. **Build** — Run **`npm run build`** before start; without `.next`, the process exits → 503.
+4. **Logs** — Check **Node / deployment logs** after “Starting…” for crashes (OOM, errors). If you see **two** “Next.js 14” banners back-to-back, the start command may be running twice—leave **one** process only.
+5. **SSH sanity check** (if available): `curl -sI http://127.0.0.1:3000` (use your real **PORT**). If that fails, the proxy is not the problem—Node isn’t listening. If it succeeds but the site still 503, fix the **web server → Node** mapping in the panel.
+6. **Restart** the Node app after changing env vars.
 
 ### Styles / scripts not loading? (unstyled page, console errors on `layout.css`, `page.js`, `main-app`)
 
