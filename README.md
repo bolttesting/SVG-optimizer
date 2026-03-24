@@ -29,7 +29,7 @@ npm run dev
 
 Then open **http://127.0.0.1:3000** (the dev script uses this host to avoid some Windows / DNS issues).
 
-Use **Node.js 20.x** locally and on Hostinger (Next.js 14 is not reliable on Node 22 for some builds). The repo includes **`.nvmrc`** (`20`) and **`package.json` `engines`** so panels that read them pick the right runtime.
+Use **Node.js 24.x** locally and on Hostinger (select **24** in the Node version dropdown). The repo includes **`.nvmrc`** (`24`) and **`package.json` `engines`** so panels that read them match. If a host’s build still fails on 24, try **20 LTS** as a fallback.
 
 **Production:** [svgoptimizer.site](https://svgoptimizer.site) — canonical URLs, sitemap, and Open Graph default to `https://svgoptimizer.site` when `NEXT_PUBLIC_SITE_URL` is not set.
 
