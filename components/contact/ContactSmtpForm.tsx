@@ -92,7 +92,7 @@ export function ContactSmtpForm() {
         />
       </div>
       <Button type="submit" disabled={status === 'loading'}>
-        {status === 'loading' ? 'Sending…' : 'Send message'}
+        {status === 'loading' ? 'Sending…' : 'Send'}
       </Button>
 
       {status === 'success' && (

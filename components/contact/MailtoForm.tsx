@@ -55,7 +55,7 @@ export function MailtoForm({ to }: MailtoFormProps) {
           placeholder="How can we help?"
         />
       </div>
-      <Button type="submit">Open in email app</Button>
+      <Button type="submit">Send</Button>
       <p className="text-xs text-muted-foreground">
         Opens your default mail app with a draft. Nothing is sent from our servers.
       </p>
