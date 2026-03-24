@@ -29,6 +29,8 @@ npm run dev
 
 Then open **http://127.0.0.1:3000** (the dev script uses this host to avoid some Windows / DNS issues).
 
+**Production:** [svgoptimizer.site](https://svgoptimizer.site) — canonical URLs, sitemap, and Open Graph default to `https://svgoptimizer.site` when `NEXT_PUBLIC_SITE_URL` is not set. On Vercel, set `NEXT_PUBLIC_SITE_URL` to your custom domain (or leave unset to use that default).
+
 ### Styles / scripts not loading? (unstyled page, console errors on `layout.css`, `page.js`, `main-app`)
 
 1. **Ad blockers & privacy extensions** — uBlock, AdGuard, Brave Shields, etc. often block Next.js **dev** filenames like `page.js` or `webpack.js`. **Disable them for `127.0.0.1`** or use a private window with extensions off.

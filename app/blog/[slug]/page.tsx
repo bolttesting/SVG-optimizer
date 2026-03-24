@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: ogTitle,
       description: ogDescription,
       images: ogImageUrl ? [ogImageUrl] : undefined,
-      creator: siteConfig.twitterHandle,
+      ...(siteConfig.twitterHandle ? { creator: siteConfig.twitterHandle } : {}),
     },
   }
 }

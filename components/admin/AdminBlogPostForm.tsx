@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { siteConfig } from '@/config/site'
 import { sanitizeSlugForBlog } from '@/lib/blog/slug'
 import { cn } from '@/lib/utils'
 
@@ -79,7 +80,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 export function AdminBlogPostForm({ mode, lockedSlug, initial }: AdminBlogPostFormProps) {
   const router = useRouter()
-  const siteBase = (process.env.NEXT_PUBLIC_SITE_URL || 'http://127.0.0.1:3000').replace(/\/$/, '')
+  const siteBase = siteConfig.url.replace(/\/$/, '')
   const loginFrom =
     mode === 'edit' && lockedSlug
       ? `/admin/blog/edit/${encodeURIComponent(lockedSlug)}`

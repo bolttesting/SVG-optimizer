@@ -7,7 +7,10 @@ import { UsageAnalyticsBeacon } from '@/components/layout/UsageAnalyticsBeacon'
 import { siteConfig } from '@/config/site'
 import './globals.css'
 
+const metadataBase = new URL(`${siteConfig.url.replace(/\/$/, '')}/`)
+
 export const metadata: Metadata = {
+  metadataBase,
   title: {
     default: siteConfig.title,
     template: `%s | ${siteConfig.name}`,
