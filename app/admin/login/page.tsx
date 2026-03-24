@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 function AdminLoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const from = searchParams.get('from') || '/admin/blog'
+  const from = searchParams.get('from') || '/admin/blog/new'
   const configError = searchParams.get('error') === 'config'
 
   const [password, setPassword] = useState('')
@@ -36,7 +36,7 @@ function AdminLoginForm() {
         setMessage(typeof data.error === 'string' ? data.error : 'Login failed')
         return
       }
-      router.push(from.startsWith('/admin') ? from : '/admin/blog')
+      router.push(from.startsWith('/admin') ? from : '/admin/blog/new')
       router.refresh()
     } catch {
       setStatus('error')

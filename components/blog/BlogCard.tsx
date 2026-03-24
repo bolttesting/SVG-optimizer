@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import type { BlogPostMeta } from '@/lib/blog/posts'
+import type { BlogPostMeta } from '@/lib/blog/types'
 import { siteConfig } from '@/config/site'
 import { absolutePostImage } from '@/lib/blog/seo'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'

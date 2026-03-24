@@ -15,38 +15,42 @@ export async function verifyAdminJwt(
   token: string | undefined,
   secret: string | undefined
 ): Promise<boolean> {
-  if (!token || !secret) return false
-  const parts = token.split('.')
-  if (parts.length !== 3) return false
-  const [h, p, s] = parts
-  const signingInput = `${h}.${p}`
-  let sigBytes: Uint8Array
   try {
-    sigBytes = base64UrlDecodeToBytes(s)
-  } catch {
-    return false
-  }
-  const key = await crypto.subtle.importKey(
-    'raw',
-    new TextEncoder().encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['verify']
-  )
-  const signature = new Uint8Array(sigBytes)
-  const ok = await crypto.subtle.verify(
-    'HMAC',
-    key,
-    signature,
-    new TextEncoder().encode(signingInput)
-  )
-  if (!ok) return false
-  try {
-    const payloadJson = new TextDecoder().decode(base64UrlDecodeToBytes(p))
-    const payload = JSON.parse(payloadJson) as { exp?: number; sub?: string }
-    if (payload.sub !== 'admin') return false
-    if (typeof payload.exp !== 'number') return false
-    return payload.exp > Math.floor(Date.now() / 1000)
+    if (!token || !secret) return false
+    const parts = token.split('.')
+    if (parts.length !== 3) return false
+    const [h, p, s] = parts
+    const signingInput = `${h}.${p}`
+    let sigBytes: Uint8Array
+    try {
+      sigBytes = base64UrlDecodeToBytes(s)
+    } catch {
+      return false
+    }
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['verify']
+    )
+    const signature = new Uint8Array(sigBytes)
+    const ok = await crypto.subtle.verify(
+      'HMAC',
+      key,
+      signature,
+      new TextEncoder().encode(signingInput)
+    )
+    if (!ok) return false
+    try {
+      const payloadJson = new TextDecoder().decode(base64UrlDecodeToBytes(p))
+      const payload = JSON.parse(payloadJson) as { exp?: number; sub?: string }
+      if (payload.sub !== 'admin') return false
+      if (typeof payload.exp !== 'number') return false
+      return payload.exp > Math.floor(Date.now() / 1000)
+    } catch {
+      return false
+    }
   } catch {
     return false
   }

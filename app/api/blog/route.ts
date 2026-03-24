@@ -6,6 +6,7 @@ import matter from 'gray-matter'
 import { ADMIN_SESSION_COOKIE } from '@/lib/auth/constants'
 import { verifyAdminJwt } from '@/lib/auth/verify-admin-jwt'
 import { sanitizeSlugForBlog } from '@/lib/blog/slug'
+import { createSupabaseService } from '@/lib/supabase/blog-client'
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
 
@@ -23,13 +24,20 @@ function parseKeywords(body: Record<string, unknown>): string[] {
     .filter(Boolean)
 }
 
+function supabaseWriteEnabled(): boolean {
+  return !!(
+    process.env.NEXT_PUBLIC_SUPABASE_URL &&
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+  )
+}
+
 export async function POST(request: NextRequest) {
   const adminSecret = process.env.ADMIN_SECRET
   if (!adminSecret) {
     return NextResponse.json(
       {
         error:
-          'Blog publishing is not configured. Set ADMIN_SECRET in .env.local. On Vercel, filesystem writes are not persisted—commit new posts to content/blog or use a database.',
+          'Blog publishing is not configured. Set ADMIN_SECRET in .env.local. On Vercel, use Supabase (see .env.local.example) or commit markdown under content/blog.',
       },
       { status: 503 }
     )
@@ -88,6 +96,46 @@ export async function POST(request: NextRequest) {
   const canonical = pickStr(body.canonical) || undefined
   const robots = pickStr(body.robots) || undefined
 
+  const supabase = createSupabaseService()
+  if (supabaseWriteEnabled() && supabase) {
+    const { error } = await supabase.from('blog_posts').upsert(
+      {
+        slug,
+        title,
+        description,
+        body: content,
+        category,
+        tags,
+        author,
+        published_on: date,
+        updated_on: updated ?? null,
+        meta_title: metaTitle ?? null,
+        keywords: keywords.length ? keywords : null,
+        og_title: ogTitle ?? null,
+        og_description: ogDescription ?? null,
+        og_image: ogImage ?? null,
+        twitter_image: twitterImage ?? null,
+        canonical_url: canonical ?? null,
+        robots: robots ?? null,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'slug' }
+    )
+
+    if (error) {
+      return NextResponse.json(
+        { error: error.message, hint: 'Check Supabase table blog_posts and RLS (see supabase/migrations).' },
+        { status: 500 }
+      )
+    }
+
+    revalidatePath('/blog')
+    revalidatePath(`/blog/${slug}`)
+    revalidatePath('/sitemap.xml')
+
+    return NextResponse.json({ ok: true, slug, storage: 'supabase' as const })
+  }
+
   const frontmatter: Record<string, unknown> = {
     title,
     description,
@@ -118,7 +166,10 @@ export async function POST(request: NextRequest) {
   } catch (e) {
     const message = e instanceof Error ? e.message : 'Write failed'
     return NextResponse.json(
-      { error: message, hint: 'Serverless hosts often have a read-only filesystem.' },
+      {
+        error: message,
+        hint: 'Filesystem write failed. On Vercel, set NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY + NEXT_PUBLIC_SUPABASE_ANON_KEY and run the SQL migration.',
+      },
       { status: 500 }
     )
   }
@@ -127,5 +178,55 @@ export async function POST(request: NextRequest) {
   revalidatePath(`/blog/${slug}`)
   revalidatePath('/sitemap.xml')
 
-  return NextResponse.json({ ok: true, slug, path: `content/blog/${slug}.md` })
+  return NextResponse.json({ ok: true, slug, path: `content/blog/${slug}.md`, storage: 'filesystem' as const })
+}
+
+export async function DELETE(request: NextRequest) {
+  const adminSecret = process.env.ADMIN_SECRET
+  if (!adminSecret) {
+    return NextResponse.json({ error: 'ADMIN_SECRET is not configured' }, { status: 503 })
+  }
+
+  let body: Record<string, unknown>
+  try {
+    body = await request.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+  }
+
+  const session = request.cookies.get(ADMIN_SESSION_COOKIE)?.value
+  if (!(await verifyAdminJwt(session, adminSecret))) {
+    return NextResponse.json({ error: 'Unauthorized — sign in at /admin/login' }, { status: 401 })
+  }
+
+  const slug = sanitizeSlugForBlog(pickStr(body.slug))
+  if (!slug) {
+    return NextResponse.json({ error: 'Invalid slug' }, { status: 400 })
+  }
+
+  let removed = false
+  const supabase = createSupabaseService()
+  if (supabaseWriteEnabled() && supabase) {
+    const { data, error } = await supabase.from('blog_posts').delete().eq('slug', slug).select('slug')
+    if (!error && data && data.length > 0) removed = true
+  }
+
+  const filePath = path.join(process.cwd(), 'content', 'blog', `${slug}.md`)
+  try {
+    await fs.unlink(filePath)
+    removed = true
+  } catch {
+    // file missing is fine if DB row was deleted
+  }
+
+  if (!removed) {
+    return NextResponse.json({ error: 'Post not found in Supabase or content/blog' }, { status: 404 })
+  }
+
+  revalidatePath('/blog')
+  revalidatePath(`/blog/${slug}`)
+  revalidatePath('/sitemap.xml')
+  revalidatePath('/admin/blog')
+
+  return NextResponse.json({ ok: true, slug })
 }

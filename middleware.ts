@@ -14,8 +14,14 @@ export async function middleware(request: NextRequest) {
 
   if (pathname === '/admin/login' || pathname.startsWith('/admin/login/')) {
     const existing = request.cookies.get(ADMIN_SESSION_COOKIE)?.value
-    if (await verifyAdminJwt(existing, secret)) {
-      return NextResponse.redirect(new URL('/admin/blog', request.url))
+    let loggedIn = false
+    try {
+      loggedIn = await verifyAdminJwt(existing, secret)
+    } catch {
+      loggedIn = false
+    }
+    if (loggedIn) {
+      return NextResponse.redirect(new URL('/admin/blog/new', request.url))
     }
     return NextResponse.next()
   }
@@ -27,12 +33,21 @@ export async function middleware(request: NextRequest) {
   }
 
   const token = request.cookies.get(ADMIN_SESSION_COOKIE)?.value
-  const ok = await verifyAdminJwt(token, secret)
+  let ok = false
+  try {
+    ok = await verifyAdminJwt(token, secret)
+  } catch {
+    ok = false
+  }
 
   if (!ok) {
     const login = new URL('/admin/login', request.url)
     login.searchParams.set('from', pathname)
     return NextResponse.redirect(login)
+  }
+
+  if (pathname === '/admin' || pathname === '/admin/') {
+    return NextResponse.redirect(new URL('/admin/blog/new', request.url))
   }
 
   return NextResponse.next()

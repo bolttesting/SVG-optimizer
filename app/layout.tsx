@@ -3,6 +3,7 @@ import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { CookieConsent } from '@/components/layout/CookieConsent'
 import { ConditionalAnalytics } from '@/components/layout/ConditionalAnalytics'
+import { UsageAnalyticsBeacon } from '@/components/layout/UsageAnalyticsBeacon'
 import { siteConfig } from '@/config/site'
 import './globals.css'
 
@@ -49,6 +50,7 @@ export default function RootLayout({
         <Footer />
         <CookieConsent />
         <ConditionalAnalytics />
+        <UsageAnalyticsBeacon />
       </body>
     </html>
   )

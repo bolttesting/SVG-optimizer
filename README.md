@@ -41,8 +41,8 @@ Then open **http://127.0.0.1:3000** (the dev script uses this host to avoid some
 
 - Posts live in **`content/blog/*.md`** with YAML frontmatter (`title`, `description`, `date`, `category`, optional `tags`, `author`).
 - **`/blog`** lists posts; **`/blog/[slug]`** renders Markdown (with `@tailwindcss/typography` prose styles).
-- **Sign in:** set `ADMIN_SECRET` in `.env.local`, open **`/admin/login`**, enter that password. You get an **httpOnly cookie** (7 days). Then **`/admin/blog`** is available.
-- **Sign out:** **Sign out** on the blog admin page, or `POST /api/auth/logout`.
+- **Sign in:** set `ADMIN_SECRET` in `.env.local`, open **`/admin/login`**, enter that password. You get an **httpOnly cookie** (7 days). The **admin dashboard** is at **`/admin`** (sidebar: New post, Posted blogs, Usage stats).
+- **Sign out:** **Sign out** in the sidebar, or `POST /api/auth/logout`.
 - **API:** `POST /api/blog` requires a valid admin session cookie (use the UI after login). Programmatic posting would need a cookie from login or a future API key.
 
 ## Cookies & analytics

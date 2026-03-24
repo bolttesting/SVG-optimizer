@@ -5,7 +5,7 @@ import { getAllPosts } from '@/lib/blog/posts'
 /** Regenerate when new markdown posts exist (local / writable deploys). */
 export const dynamic = 'force-dynamic'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = siteConfig.url.replace(/\/$/, '')
 
   const staticPages: MetadataRoute.Sitemap = [
@@ -21,7 +21,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === '' ? 1 : 0.85,
   }))
 
-  const posts = getAllPosts().map((post) => ({
+  const allPosts = await getAllPosts()
+  const posts = allPosts.map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,
     lastModified: new Date(post.updated ?? post.date),
     changeFrequency: 'monthly' as const,

@@ -1,18 +1,15 @@
 /** @type {import('tailwindcss').Config} */
-const path = require('path')
-
-// Resolve globs from project root (reliable on Windows / paths with spaces)
-const root = __dirname
-
+// Use relative ./ globs from this file’s directory. path.join() + backslashes breaks Tailwind’s
+// scanner on some Windows setups (including paths with spaces).
 module.exports = {
   darkMode: 'class',
   content: [
-    path.join(root, 'app/**/*.{js,ts,jsx,tsx,mdx}'),
-    path.join(root, 'components/**/*.{js,ts,jsx,tsx,mdx}'),
-    path.join(root, 'pages/**/*.{js,ts,jsx,tsx,mdx}'),
-    path.join(root, 'hooks/**/*.{js,ts,jsx,tsx}'),
-    path.join(root, 'store/**/*.{js,ts,jsx,tsx}'),
-    path.join(root, 'lib/**/*.{js,ts,jsx,tsx}'),
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './hooks/**/*.{js,ts,jsx,tsx}',
+    './store/**/*.{js,ts,jsx,tsx}',
+    './lib/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     container: {

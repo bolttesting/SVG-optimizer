@@ -1,9 +1,7 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import Link from 'next/link'
+import { useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Container } from '@/components/layout/Container'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,6 +9,31 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { sanitizeSlugForBlog } from '@/lib/blog/slug'
 import { cn } from '@/lib/utils'
+
+export type AdminBlogPostFormInitial = {
+  title: string
+  description: string
+  content: string
+  metaTitle?: string
+  keywords?: string
+  robots?: string
+  ogTitle?: string
+  ogDescription?: string
+  ogImage?: string
+  twitterImage?: string
+  canonical?: string
+  author?: string
+  date: string
+  updated?: string
+  category: string
+  tags?: string
+}
+
+export type AdminBlogPostFormProps = {
+  mode: 'create' | 'edit'
+  lockedSlug?: string
+  initial?: AdminBlogPostFormInitial
+}
 
 function CharMeter({
   length,
@@ -54,37 +77,66 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default function AdminBlogPage() {
+export function AdminBlogPostForm({ mode, lockedSlug, initial }: AdminBlogPostFormProps) {
   const router = useRouter()
   const siteBase = (process.env.NEXT_PUBLIC_SITE_URL || 'http://127.0.0.1:3000').replace(/\/$/, '')
+  const loginFrom =
+    mode === 'edit' && lockedSlug
+      ? `/admin/blog/edit/${encodeURIComponent(lockedSlug)}`
+      : '/admin/blog/new'
 
-  const [title, setTitle] = useState('')
+  const [title, setTitle] = useState(initial?.title ?? '')
   const [slug, setSlug] = useState('')
-  const [description, setDescription] = useState('')
-  const [metaTitle, setMetaTitle] = useState('')
-  const [keywords, setKeywords] = useState('')
-  const [robots, setRobots] = useState('')
-  const [ogTitle, setOgTitle] = useState('')
-  const [ogDescription, setOgDescription] = useState('')
-  const [ogImage, setOgImage] = useState('')
-  const [twitterImage, setTwitterImage] = useState('')
-  const [canonical, setCanonical] = useState('')
-  const [author, setAuthor] = useState('Admin')
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10))
-  const [updated, setUpdated] = useState('')
-  const [category, setCategory] = useState('general')
-  const [tags, setTags] = useState('')
-  const [content, setContent] = useState('')
+  const [description, setDescription] = useState(initial?.description ?? '')
+  const [metaTitle, setMetaTitle] = useState(initial?.metaTitle ?? '')
+  const [keywords, setKeywords] = useState(initial?.keywords ?? '')
+  const [robots, setRobots] = useState(initial?.robots ?? '')
+  const [ogTitle, setOgTitle] = useState(initial?.ogTitle ?? '')
+  const [ogDescription, setOgDescription] = useState(initial?.ogDescription ?? '')
+  const [ogImage, setOgImage] = useState(initial?.ogImage ?? '')
+  const [twitterImage, setTwitterImage] = useState(initial?.twitterImage ?? '')
+  const [canonical, setCanonical] = useState(initial?.canonical ?? '')
+  const [author, setAuthor] = useState(initial?.author ?? 'Admin')
+  const [date, setDate] = useState(initial?.date ?? new Date().toISOString().slice(0, 10))
+  const [updated, setUpdated] = useState(initial?.updated ?? '')
+  const [category, setCategory] = useState(initial?.category ?? 'general')
+  const [tags, setTags] = useState(initial?.tags ?? '')
+  const [content, setContent] = useState(initial?.content ?? '')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [message, setMessage] = useState('')
+  const [imageUpload, setImageUpload] = useState<'idle' | 'loading' | 'error'>('idle')
+  const [imageUploadMsg, setImageUploadMsg] = useState('')
+  const featuredFileRef = useRef<HTMLInputElement>(null)
 
-  const resolvedSlug = useMemo(() => sanitizeSlugForBlog(slug || title), [slug, title])
+  const resolvedSlug = useMemo(() => {
+    if (lockedSlug) return lockedSlug
+    return sanitizeSlugForBlog(slug || title) ?? ''
+  }, [lockedSlug, slug, title])
+
   const previewUrl = resolvedSlug ? `${siteBase}/blog/${resolvedSlug}` : null
 
-  async function logout() {
-    await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' })
-    router.push('/admin/login')
-    router.refresh()
+  async function onFeaturedFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    setImageUpload('loading')
+    setImageUploadMsg('')
+    try {
+      const fd = new FormData()
+      fd.set('file', file)
+      const res = await fetch('/api/blog/upload', {
+        method: 'POST',
+        body: fd,
+        credentials: 'same-origin',
+      })
+      const data = (await res.json()) as { error?: string; url?: string }
+      if (!res.ok) throw new Error(data.error ?? 'Upload failed')
+      if (data.url) setOgImage(data.url)
+      setImageUpload('idle')
+    } catch (err) {
+      setImageUpload('error')
+      setImageUploadMsg(err instanceof Error ? err.message : 'Upload failed')
+    }
   }
 
   function resetForm() {
@@ -105,12 +157,15 @@ export default function AdminBlogPage() {
     setCategory('general')
     setTags('')
     setContent('')
+    setImageUpload('idle')
+    setImageUploadMsg('')
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setStatus('loading')
     setMessage('')
+    const slugPayload = lockedSlug ?? (slug.trim() ? slug : undefined)
     try {
       const keywordList = keywords
         .split(',')
@@ -122,7 +177,7 @@ export default function AdminBlogPage() {
         credentials: 'same-origin',
         body: JSON.stringify({
           title,
-          slug: slug || undefined,
+          slug: slugPayload,
           description,
           metaTitle: metaTitle || undefined,
           keywords: keywordList.length ? keywordList : undefined,
@@ -148,39 +203,43 @@ export default function AdminBlogPage() {
         setStatus('error')
         setMessage(data.error ?? data.hint ?? 'Request failed')
         if (res.status === 401) {
-          router.push('/admin/login?from=/admin/blog')
+          router.push(`/admin/login?from=${encodeURIComponent(loginFrom)}`)
         }
         return
       }
       setStatus('success')
-      setMessage(`Published: ${data.slug} → ${data.path}`)
-      resetForm()
+      setMessage(
+        mode === 'edit'
+          ? data.storage === 'supabase'
+            ? `Saved to Supabase: ${data.slug}`
+            : `Saved: ${data.slug} → ${data.path ?? 'content/blog'}`
+          : data.storage === 'supabase'
+            ? `Published to Supabase: ${data.slug}`
+            : `Published: ${data.slug} → ${data.path ?? 'content/blog'}`
+      )
+      if (mode === 'create') {
+        resetForm()
+      }
+      router.refresh()
     } catch {
       setStatus('error')
       setMessage('Network error')
     }
   }
 
+  const heading = mode === 'edit' ? 'Edit blog post' : 'New blog post'
+  const submitLabel =
+    status === 'loading' ? (mode === 'edit' ? 'Saving…' : 'Publishing…') : mode === 'edit' ? 'Save changes' : 'Publish post'
+
   return (
-    <Container className="max-w-3xl py-12 md:py-16">
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <Link
-          href="/blog"
-          className="inline-flex text-sm font-medium text-muted-foreground hover:text-foreground"
-        >
-          ← Back to blog
-        </Link>
-        <Button type="button" variant="outline" size="sm" onClick={() => void logout()}>
-          Sign out
-        </Button>
-      </div>
+    <div className="w-full max-w-3xl px-4 pb-10 pt-4 md:px-8 md:pb-12 md:pt-6">
+      <h1 className="mb-6 text-2xl font-bold tracking-tight">{heading}</h1>
       <Card className="border-border/80 shadow-lg">
         <CardHeader>
-          <CardTitle>Publish blog post</CardTitle>
+          <CardTitle>{mode === 'edit' ? 'Update post' : 'Publish'}</CardTitle>
           <CardDescription>
-            Fill in SEO and social fields so search engines and link previews look right. Posts save to{' '}
-            <code className="text-xs">content/blog/</code>. On serverless hosts, disk writes may not persist—commit
-            files or use a database in production.
+            If Supabase env vars are set, posts and uploads go to your project; otherwise markdown is saved under{' '}
+            <code className="text-xs">content/blog/</code>.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -192,12 +251,15 @@ export default function AdminBlogPage() {
                 <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="slug">URL slug (optional)</Label>
+                <Label htmlFor="slug">URL slug {lockedSlug ? '(fixed for this post)' : '(optional)'}</Label>
                 <Input
                   id="slug"
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
-                  placeholder="auto from title if empty"
+                  value={lockedSlug ?? slug}
+                  onChange={(e) => !lockedSlug && setSlug(e.target.value)}
+                  placeholder={lockedSlug ? undefined : 'auto from title if empty'}
+                  readOnly={!!lockedSlug}
+                  disabled={!!lockedSlug}
+                  className={lockedSlug ? 'bg-muted/50' : undefined}
                 />
                 {previewUrl && (
                   <p className="text-xs text-muted-foreground">
@@ -243,7 +305,7 @@ export default function AdminBlogPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="tags">Tags (comma-separated, shown on the post)</Label>
+                <Label htmlFor="tags">Tags (comma-separated)</Label>
                 <Input
                   id="tags"
                   value={tags}
@@ -263,7 +325,7 @@ export default function AdminBlogPage() {
                   onChange={(e) => setDescription(e.target.value)}
                   required
                   rows={3}
-                  placeholder="1–2 sentences: what the post is about. Used in Google snippets and OG if you leave social description empty."
+                  placeholder="1–2 sentences: what the post is about."
                 />
                 <CharMeter
                   length={description.length}
@@ -296,9 +358,6 @@ export default function AdminBlogPage() {
                   onChange={(e) => setKeywords(e.target.value)}
                   placeholder="svg optimization, core web vitals"
                 />
-                <p className="text-xs text-muted-foreground">
-                  Stored for metadata &amp; structured data; use natural phrases you want to be found for.
-                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="canonical">Canonical URL (optional)</Label>
@@ -306,7 +365,7 @@ export default function AdminBlogPage() {
                   id="canonical"
                   value={canonical}
                   onChange={(e) => setCanonical(e.target.value)}
-                  placeholder="https://… only if this post lives at another canonical URL"
+                  placeholder="https://…"
                 />
               </div>
               <div className="space-y-2">
@@ -319,28 +378,41 @@ export default function AdminBlogPage() {
                 >
                   <option value="">Default (index, follow)</option>
                   <option value="index, follow">Explicit index, follow</option>
-                  <option value="noindex, nofollow">noindex, nofollow (hide from search)</option>
+                  <option value="noindex, nofollow">noindex, nofollow</option>
                 </select>
               </div>
             </div>
 
             <div className="space-y-5">
               <SectionTitle>Social &amp; Open Graph</SectionTitle>
-              <p className="text-xs text-muted-foreground">
-                Used when the post is shared on X, LinkedIn, Slack, etc. Leave overrides empty to reuse SEO title
-                / description.
-              </p>
               <div className="space-y-2">
                 <Label htmlFor="ogImage">Featured / OG image URL</Label>
                 <Input
                   id="ogImage"
                   value={ogImage}
                   onChange={(e) => setOgImage(e.target.value)}
-                  placeholder="https://… or /images/my-post.png (from public/)"
+                  placeholder="https://… or /images/…"
                 />
-                <p className="text-xs text-muted-foreground">
-                  ~1200×630px works well. Shown on the post and blog cards when set.
-                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    ref={featuredFileRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
+                    className="sr-only"
+                    onChange={(e) => void onFeaturedFileChange(e)}
+                  />
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    disabled={imageUpload === 'loading'}
+                    onClick={() => featuredFileRef.current?.click()}
+                  >
+                    {imageUpload === 'loading' ? 'Uploading…' : 'Upload image (Supabase)'}
+                  </Button>
+                  <span className="text-xs text-muted-foreground">Max 5 MB</span>
+                </div>
+                {imageUploadMsg ? <p className="text-xs text-destructive">{imageUploadMsg}</p> : null}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="ogTitle">OG title override (optional)</Label>
@@ -375,23 +447,18 @@ export default function AdminBlogPage() {
             <div className="space-y-5">
               <SectionTitle>Content (Markdown)</SectionTitle>
               <details className="rounded-md border border-border/80 bg-muted/30 px-3 py-2 text-sm">
-                <summary className="cursor-pointer font-medium text-foreground">Markdown quick reference</summary>
+                <summary className="cursor-pointer font-medium">Markdown quick reference</summary>
                 <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
                   <li>
                     Headings: <code className="text-xs">## H2</code>, <code className="text-xs">### H3</code>
                   </li>
                   <li>
-                    Bold / italic: <code className="text-xs">**bold**</code>, <code className="text-xs">*italic*</code>
+                    Bold: <code className="text-xs">**bold**</code> · Link:{' '}
+                    <code className="text-xs">[text](url)</code>
                   </li>
                   <li>
-                    Link: <code className="text-xs">[text](https://…)</code>
-                  </li>
-                  <li>
-                    List: lines starting with <code className="text-xs">- </code> or <code className="text-xs">1. </code>
-                  </li>
-                  <li>
-                    Code: <code className="text-xs">`inline`</code> or fenced blocks with{' '}
-                    <code className="text-xs">```</code>
+                    Code: <code className="text-xs">`inline`</code> or <code className="text-xs">```</code>{' '}
+                    blocks
                   </li>
                 </ul>
               </details>
@@ -406,14 +473,11 @@ export default function AdminBlogPage() {
                   className="min-h-[320px] font-mono text-[13px] leading-relaxed"
                   placeholder={'## Intro\n\nWrite your article in Markdown…'}
                 />
-                <p className="text-xs text-muted-foreground">
-                  Reading time is calculated automatically from word count (~200 wpm).
-                </p>
               </div>
             </div>
 
             <Button type="submit" disabled={status === 'loading'}>
-              {status === 'loading' ? 'Publishing…' : 'Publish post'}
+              {submitLabel}
             </Button>
             {message && (
               <p
@@ -429,6 +493,6 @@ export default function AdminBlogPage() {
           </form>
         </CardContent>
       </Card>
-    </Container>
+    </div>
   )
 }

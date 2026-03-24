@@ -97,8 +97,5 @@ button {
   cursor: pointer;
 }
 
-/* Basic card / bordered regions when utilities missing */
-.border,
-[class*='border-'] {
-  border-color: var(--f-border);
-}
+/* Do not use [class*='border-'] here — it matches Tailwind utilities (e.g. border-border) and can
+   override real theme colors depending on stylesheet order. */

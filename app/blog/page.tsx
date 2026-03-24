@@ -11,8 +11,8 @@ export const metadata = {
   description: 'Articles on SVG optimization, web performance, and frontend tooling.',
 }
 
-export default function BlogIndexPage() {
-  const posts = getAllPosts()
+export default async function BlogIndexPage() {
+  const posts = await getAllPosts()
 
   return (
     <div className="relative overflow-hidden border-b bg-gradient-to-b from-primary/[0.07] to-transparent">
@@ -34,7 +34,10 @@ export default function BlogIndexPage() {
         </p>
 
         {posts.length === 0 ? (
-          <p className="text-muted-foreground">No posts yet. Add markdown files under content/blog.</p>
+          <p className="text-muted-foreground">
+            No posts yet. Add markdown under <code className="text-xs">content/blog</code> or publish from
+            the admin dashboard (with Supabase configured on Vercel).
+          </p>
         ) : (
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
