@@ -7,6 +7,8 @@ import { buttonVariants } from '@/components/ui/button'
 import { siteConfig, twitterProfileUrl } from '@/config/site'
 import { cn } from '@/lib/utils'
 import { MailtoForm } from '@/components/contact/MailtoForm'
+import { ContactSmtpForm } from '@/components/contact/ContactSmtpForm'
+import { isContactSmtpEnabled } from '@/lib/contact/smtp-config'
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -17,6 +19,7 @@ export default function ContactPage() {
   const email = siteConfig.contactEmail
   const github = siteConfig.contactGithubUrl
   const twitter = twitterProfileUrl()
+  const smtpEnabled = isContactSmtpEnabled()
 
   return (
     <div className="relative overflow-hidden border-b bg-gradient-to-b from-primary/[0.07] to-transparent">
@@ -44,10 +47,12 @@ export default function ContactPage() {
                   <CardTitle className="text-lg">Email</CardTitle>
                 </div>
                 <CardDescription>
-                  Prefer email? Reach us directly or compose a message below.
+                  {smtpEnabled
+                    ? 'Send through the site (SMTP) or open a draft in your own email app.'
+                    : 'Reach us directly or compose a message in your email app below.'}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-8">
                 <p className="text-sm">
                   <a
                     href={`mailto:${email}`}
@@ -56,6 +61,19 @@ export default function ContactPage() {
                     {email}
                   </a>
                 </p>
+                {smtpEnabled && (
+                  <>
+                    <ContactSmtpForm />
+                    <div className="relative">
+                      <div className="absolute inset-0 flex items-center" aria-hidden>
+                        <span className="w-full border-t border-border" />
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-card px-2 text-muted-foreground">Or use your mail app</span>
+                      </div>
+                    </div>
+                  </>
+                )}
                 <MailtoForm to={email} />
               </CardContent>
             </Card>
