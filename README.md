@@ -25,7 +25,7 @@ A free, client-side SVG optimization tool. Reduce file size by up to 70% while p
 | Piece | Version | Notes |
 |--------|---------|--------|
 | **Next.js** | **14.2.x** (see `package.json`) | There is **no** “Next.js 24”. Major lines are 14, 15, … |
-| **Node.js** | **24.x recommended** (`.nvmrc` = `24`) | **`engines`** allows **22–24** so local dev works on common installs. Use **24** on Hostinger when the panel offers it. |
+| **Node.js** | **24.x required** (`.nvmrc` = `24`) | **`engines.node`** is **`24.x`** so Vercel, Hostinger, and local installs stay on the same major line. |
 
 ## Getting Started
 
