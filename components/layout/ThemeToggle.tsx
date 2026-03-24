@@ -24,16 +24,23 @@ export function ThemeToggle() {
     document.documentElement.classList.toggle('dark', next === 'dark')
   }
 
-  /* Always show control: before hydration it’s disabled so layout doesn’t jump / “disappear” */
+  /* Stable SSR + first paint avoids hydration mismatch (React #425) from theme icon swap */
+  if (!mounted) {
+    return (
+      <Button variant="ghost" size="icon" disabled aria-hidden className="shrink-0 opacity-50" tabIndex={-1}>
+        <Moon className="h-4 w-4" />
+      </Button>
+    )
+  }
+
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={mounted ? toggle : undefined}
-      disabled={!mounted}
+      onClick={toggle}
       aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
       title="Dark / light mode"
-      className={!mounted ? 'opacity-60' : undefined}
+      className="shrink-0"
     >
       {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
     </Button>

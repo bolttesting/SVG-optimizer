@@ -20,22 +20,32 @@ export function UsageAnalyticsBeacon() {
       return
     }
 
-    void fetch('/api/analytics/track', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: pathname }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          try {
-            localStorage.setItem(key, '1')
-          } catch {
-            /* ignore */
-          }
-        }
+    const send = () => {
+      void fetch('/api/analytics/track', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: pathname }),
       })
-      .catch(() => {})
+        .then((res) => {
+          if (res.ok) {
+            try {
+              localStorage.setItem(key, '1')
+            } catch {
+              /* ignore */
+            }
+          }
+        })
+        .catch(() => {})
+    }
+
+    const ric = window.requestIdleCallback
+    if (typeof ric === 'function') {
+      const id = ric(send, { timeout: 4000 })
+      return () => window.cancelIdleCallback(id)
+    }
+    const t = window.setTimeout(send, 1)
+    return () => clearTimeout(t)
   }, [])
 
   return null

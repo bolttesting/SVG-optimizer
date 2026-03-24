@@ -18,9 +18,6 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   keywords: siteConfig.keywords,
   authors: [{ name: siteConfig.author }],
-  icons: {
-    icon: '/icon.svg',
-  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -38,7 +35,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="flex min-h-screen flex-col font-sans antialiased">
+      <body className="relative z-0 flex min-h-screen flex-col font-sans antialiased" suppressHydrationWarning>
         <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
           <div className="absolute -left-1/4 top-0 h-[420px] w-[70%] rounded-full bg-primary/[0.08] blur-3xl dark:bg-primary/[0.12]" />
           <div className="absolute -right-1/4 top-1/3 h-[360px] w-[60%] rounded-full bg-violet-500/[0.06] blur-3xl dark:bg-violet-400/[0.08]" />

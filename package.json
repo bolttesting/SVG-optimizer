@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "dev:127": "next dev -H 127.0.0.1 -p 3000",
-    "build": "next build",
+    "build": "next build && node scripts/copy-standalone-assets.cjs",
     "start": "node scripts/next-start.cjs",
     "lint": "next lint",
     "type-check": "tsc --noEmit -p tsconfig.ci.json"
