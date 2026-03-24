@@ -13,8 +13,10 @@ const publicSrc = path.join(root, 'public')
 const publicDst = path.join(standalone, 'public')
 
 if (!fs.existsSync(standalone)) {
-  console.error('[copy-standalone-assets] Missing .next/standalone — run `next build` first.')
-  process.exit(1)
+  console.error(
+    '[copy-standalone-assets] No .next/standalone (e.g. Vercel build without standalone) — skipping.'
+  )
+  process.exit(0)
 }
 
 if (fs.existsSync(staticSrc)) {

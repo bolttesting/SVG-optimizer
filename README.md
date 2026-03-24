@@ -43,6 +43,7 @@ If the browser shows **Internal Server Error** or missing `*.js` chunks, stop th
 - **Contact email** defaults to **`info@svgoptimizer.site`** (footer + `/contact` mailto form). Override with `NEXT_PUBLIC_CONTACT_EMAIL` if needed.
 - **Optional SMTP (Hostinger, etc.):** set `SMTP_HOST`, `SMTP_PORT` (usually `465`), `SMTP_USER`, `SMTP_PASS` on the server to enable **Send message** on `/contact` (Nodemailer). Hostinger: outgoing **smtp.hostinger.com**, port **465**, SSL. Use the mailbox password for `SMTP_PASS`. Never commit real passwords; set them only in the host’s env UI.
 - **Vercel / Hostinger / other:** set `NEXT_PUBLIC_SITE_URL=https://svgoptimizer.site` when the public URL differs from the default.
+- **Vercel:** the build disables **`output: 'standalone'`** automatically (`VERCEL=1`). Hostinger and other Node hosts still get the standalone bundle when you run **`npm run build`** locally or on the server without that env var.
 
 ### 503 Service Unavailable (Node hosting)
 
@@ -62,6 +63,18 @@ Usually **LiteSpeed/nginx cannot reach your Node process** (wrong port, wrong bi
 - **Start** using either **`npm run start`** or set **Application startup file** to **`hostinger-entry.js`** in that same root. Both run `scripts/next-start.cjs` and set **`HOSTNAME`** for the standalone server.
 - **Avoid** pointing the panel only at **`.next/standalone/server.js`** unless you also set **`HOSTNAME=127.0.0.1`** (or **`0.0.0.0`**) and **`PORT`** in Environment variables. Otherwise the OS **`HOSTNAME`** (machine name) can be used for binding and LiteSpeed returns **503**.
 - After deploy, logs should include **`[svg-optimizer] standalone server.js exists=true`**. If **`exists=false`**, the server did not run a full **`npm run build`** (with the copy step). See **`.next/standalone/HOSTINGER-README.txt`** on the server after build.
+
+#### Git / CI deploy: “Entry file” and “Output directory” (build looks fine but deploy fails)
+
+Some panels default to a **static** site template. Next.js is **not** static-export here: there is no publish folder like `dist` or `out` for the host to serve as plain files.
+
+- Set the project type to **Node.js** / **Next.js** (or whatever your host calls a **server** app), **not** “static HTML” or a generic framework with custom entry/output.
+- **Remove** or **leave blank** **Entry file** and **Output directory** if the docs say they do not apply to Next.js—those fields are for other stacks. This repo’s runtime is **`npm run start`** (or **`hostinger-entry.js`** on Hostinger), and the build writes to **`.next`** and **`.next/standalone`** automatically.
+- **Build command:** `npm ci && npm run build` (or `npm run build` if dependencies are installed separately).
+- **Start command:** `npm run start`
+- **Root directory:** the folder that contains **`package.json`** (repository root for this project).
+
+If the build log shows a successful **`next build`** but the platform still errors, the failure is almost always **run/start** or **wrong app type**, not missing source.
 
 ### Styles / scripts not loading? (unstyled page, console errors on `layout.css`, `page.js`, `main-app`)
 
