@@ -35,11 +35,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Fallback from /public when /_next CSS is blocked (e.g. extensions). Must stay a <link>, not import. */}
-        {/* eslint-disable-next-line @next/next/no-css-tags */}
-        <link rel="stylesheet" href="/styles/fallback.css" />
-      </head>
       <body className="flex min-h-screen flex-col font-sans antialiased">
         <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
           <div className="absolute -left-1/4 top-0 h-[420px] w-[70%] rounded-full bg-primary/[0.08] blur-3xl dark:bg-primary/[0.12]" />

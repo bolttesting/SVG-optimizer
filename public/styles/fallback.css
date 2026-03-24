@@ -1,6 +1,7 @@
 /**
- * Fallback layout when /_next/static/css/* fails to load (ad blockers, extensions).
- * Full Tailwind still loads from Next when available; this file is plain CSS from /public.
+ * Optional bare-minimum layout if /_next/static/css/* is blocked (extensions).
+ * Not linked from app/layout by default — avoids a render-blocking request on PageSpeed/LCP.
+ * See README “Styles / scripts not loading?” for when to use this file.
  */
 :root {
   --f-bg: #fafafa;

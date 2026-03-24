@@ -35,7 +35,7 @@ Then open **http://127.0.0.1:3000** (the dev script uses this host to avoid some
 2. **Other extensions** — Errors mentioning `share-m…` or unrelated scripts are usually extensions; try **Incognito / InPrivate** with extensions disabled.
 3. **Use production mode locally** — Hashed filenames are rarely blocked: `npm run build && npm start` then open http://127.0.0.1:3000
 4. **Alternate dev host** — If `127.0.0.1` fails, try `npm run dev:localhost` and open http://localhost:3000
-5. **Fallback CSS** — The app loads `/styles/fallback.css` from `public/` so basic layout/fonts/colors still apply if `/_next/static/...` CSS is blocked. For full Tailwind styling, fix the blockers above.
+5. **Optional emergency CSS** — `public/styles/fallback.css` is **not** linked by default (keeps Lighthouse/PageSpeed from flagging an extra render-blocking request). If something blocks `/_next/static/...` CSS, you can temporarily add `<link rel="stylesheet" href="/styles/fallback.css" />` to `app/layout.tsx` or open that URL manually for bare-minimum layout.
 
 ## Blog
 
