@@ -1,3 +1,4 @@
+import { UsageCountUp } from '@/components/home/UsageCountUp'
 import { SvgOptimizerWorkspace } from '@/components/tool/SvgOptimizerWorkspace'
 
 /** Server-rendered hero so the page is not blank if client JS fails to load or hydrate. */
@@ -16,6 +17,7 @@ export default function HomePage() {
             Shrink SVGs by up to 70% with live preview. Tune precision, presets, and batch export—
             <span className="text-foreground/90"> your files stay under your control.</span>
           </p>
+          <UsageCountUp />
         </div>
       </section>
       <SvgOptimizerWorkspace />
