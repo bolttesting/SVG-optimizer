@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server'
 import { createSupabaseService } from '@/lib/supabase/blog-client'
+import { withTimeout } from '@/lib/with-timeout'
 
 /** Public aggregate for landing page (unique visitors from analytics_sessions). */
 export const dynamic = 'force-dynamic'
+
+const RPC_MS = 6_000
 
 export async function GET() {
   const supabase = createSupabaseService()
@@ -13,7 +16,18 @@ export async function GET() {
     )
   }
 
-  const { data, error } = await supabase.rpc('get_analytics_summary')
+  let data: unknown
+  let error: unknown
+  try {
+    const res = await withTimeout(Promise.resolve(supabase.rpc('get_analytics_summary')), RPC_MS)
+    data = res.data
+    error = res.error
+  } catch {
+    return NextResponse.json(
+      { ok: false, uniqueVisitors: null },
+      { headers: { 'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60' } }
+    )
+  }
   if (error || !data || !Array.isArray(data) || !data[0]) {
     return NextResponse.json(
       { ok: false, uniqueVisitors: null },

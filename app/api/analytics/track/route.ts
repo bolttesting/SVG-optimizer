@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { randomUUID } from 'crypto'
 import { createSupabaseService } from '@/lib/supabase/blog-client'
 import { VISITOR_COOKIE, VISITOR_COOKIE_MAX_AGE } from '@/lib/analytics/constants'
+import { withTimeout } from '@/lib/with-timeout'
+
+const INSERT_MS = 6_000
 
 function pickPath(body: unknown): string {
   if (body && typeof body === 'object' && 'path' in body) {
@@ -32,10 +35,21 @@ export async function POST(request: NextRequest) {
   const isNewVisitor = !existing || !/^[0-9a-f-]{36}$/i.test(existing)
   const visitorId: string = isNewVisitor ? randomUUID() : existing!
 
-  const { error } = await supabase.from('analytics_sessions').insert({
-    visitor_id: visitorId,
-    path,
-  })
+  let error: unknown
+  try {
+    const res = await withTimeout(
+      Promise.resolve(
+        supabase.from('analytics_sessions').insert({
+          visitor_id: visitorId,
+          path,
+        })
+      ),
+      INSERT_MS
+    )
+    error = res.error
+  } catch {
+    return NextResponse.json({ ok: false }, { status: 504 })
+  }
 
   if (error) {
     return NextResponse.json({ ok: false }, { status: 500 })

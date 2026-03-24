@@ -12,15 +12,20 @@ export function UsageCountUp() {
 
   useEffect(() => {
     let cancelled = false
-    void fetch('/api/analytics/public-count')
+    const ac = new AbortController()
+    const tid = window.setTimeout(() => ac.abort(), 8_000)
+    void fetch('/api/analytics/public-count', { signal: ac.signal })
       .then((res) => res.json())
       .then((d: { ok?: boolean; uniqueVisitors?: number }) => {
         if (cancelled || !d.ok || typeof d.uniqueVisitors !== 'number' || d.uniqueVisitors < 1) return
         setTarget(d.uniqueVisitors)
       })
       .catch(() => {})
+      .finally(() => clearTimeout(tid))
     return () => {
       cancelled = true
+      ac.abort()
+      clearTimeout(tid)
     }
   }, [])
 
