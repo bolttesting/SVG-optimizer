@@ -6,6 +6,7 @@ import { CookieConsent } from '@/components/layout/CookieConsent'
 import { ConditionalAnalytics } from '@/components/layout/ConditionalAnalytics'
 import { UsageAnalyticsBeacon } from '@/components/layout/UsageAnalyticsBeacon'
 import { siteConfig } from '@/config/site'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' })
@@ -60,6 +61,7 @@ export default function RootLayout({
         <CookieConsent />
         <ConditionalAnalytics />
         <UsageAnalyticsBeacon />
+        <Analytics />
       </body>
     </html>
   )
